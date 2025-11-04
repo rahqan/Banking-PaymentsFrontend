@@ -15,7 +15,7 @@
           <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
             <option value="All">All</option>
             <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
+            <option value="Verified">Verified</option>
             <option value="Rejected">Rejected</option>
           </select>
         </div>
@@ -76,13 +76,13 @@
           <tbody>
             <tr *ngFor="let client of paginatedClients">
               <td>{{ client.clientId }}</td>
-              <td>{{ client.name }}</td>
-              <td>{{ client.email }}</td>
-              <td>{{ client.businessType }}</td>
+              <td>{{ client.clientName }}</td>
+              <td>{{ client.clientEmail }}</td>
+              <td>{{ client.clientBusinessType }}</td>
               <td>
-                <span [class]="'badge ' + (client.verificationStatus === 'Approved' ? 'bg-success' :
-                                           client.verificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
-                  {{ client.verificationStatus }}
+                <span [class]="'badge ' + (client.clientVerificationStatus === 'Verified' ? 'bg-success' :
+                                           client.clientVerificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+                  {{ client.clientVerificationStatus }}
                 </span>
               </td>
               <td>{{ client.createdAt | date:'short' }}</td>
@@ -127,25 +127,27 @@
 <!-- Action Modal -->
 <div class="modal fade" [class.show]="showActionModal" [style.display]="showActionModal ? 'block' : 'none'"
      tabindex="-1" *ngIf="showActionModal">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Client Actions</h5>
         <button type="button" class="btn-close" (click)="closeActionModal()"></button>
       </div>
       <div class="modal-body" *ngIf="selectedClient">
-        <h6>{{ selectedClient.name }}</h6>
-        <p class="text-muted">{{ selectedClient.email }}</p>
-        <p>Current Status: <span [class]="'badge ' + (selectedClient.verificationStatus === 'Approved' ? 'bg-success' :
-                                                      selectedClient.verificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
-          {{ selectedClient.verificationStatus }}
-        </span></p>
+        <h6>{{ selectedClient.clientName }}</h6>
+        <p class="text-muted">{{ selectedClient.clientEmail }}</p>
+        <p>Current Status: 
+          <span [class]="'badge ' + (selectedClient.clientVerificationStatus === 'Verified' ? 'bg-success' :
+                                     selectedClient.clientVerificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+            {{ selectedClient.clientVerificationStatus }}
+          </span>
+        </p>
 
         <hr>
 
         <h6>Update Status:</h6>
-        <div class="d-grid gap-2">
-          <button class="btn btn-success" (click)="updateClientStatus('Approved')">
+        <div class="d-grid gap-2 mb-4">
+          <button class="btn btn-success" (click)="updateClientStatus('Verified')">
             <i class="bi bi-check-circle"></i> Approve
           </button>
           <button class="btn btn-warning" (click)="updateClientStatus('Pending')">
@@ -154,6 +156,85 @@
           <button class="btn btn-danger" (click)="updateClientStatus('Rejected')">
             <i class="bi bi-x-circle"></i> Reject
           </button>
+        </div>
+
+        <hr>
+
+        <h6>Uploaded Documents:</h6>
+
+        <!-- Upload Section -->
+        <div class="card bg-light mb-3">
+          <div class="card-body">
+            <h6 class="card-title mb-3">
+              <i class="bi bi-cloud-upload me-2"></i>Upload New Document
+            </h6>
+            <div class="row g-2">
+              <div class="col-md-5">
+                <input 
+                  type="file" 
+                  id="fileInput"
+                  class="form-control form-control-sm" 
+                  (change)="onFileSelected($event)"
+                  [disabled]="uploadingDocument">
+              </div>
+              <div class="col-md-4">
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm" 
+                  placeholder="Document type (optional)"
+                  [(ngModel)]="selectedDocType"
+                  [disabled]="uploadingDocument">
+              </div>
+              <div class="col-md-3">
+                <button 
+                  class="btn btn-primary btn-sm w-100" 
+                  (click)="uploadDocument()"
+                  [disabled]="!selectedFile || uploadingDocument">
+                  <span *ngIf="!uploadingDocument">
+                    <i class="bi bi-upload me-1"></i>Upload
+                  </span>
+                  <span *ngIf="uploadingDocument">
+                    <span class="spinner-border spinner-border-sm me-1"></span>Uploading...
+                  </span>
+                </button>
+              </div>
+            </div>
+            <small class="text-muted d-block mt-2">
+              <i class="bi bi-info-circle me-1"></i>Selected: {{ selectedFile?.name || 'No file selected' }}
+            </small>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loadingDocuments" class="text-center py-3">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          <span class="ms-2">Loading documents...</span>
+        </div>
+
+        <!-- Documents List -->
+        <div *ngIf="!loadingDocuments && documents && documents.length > 0" class="document-list border rounded p-2 mt-2" style="max-height: 250px; overflow-y: auto;">
+          <div *ngFor="let doc of documents" class="d-flex justify-content-between align-items-center border-bottom py-2">
+            <div class="flex-grow-1">
+              <a [href]="doc.url" target="_blank" class="fw-semibold text-decoration-none">
+                <i class="bi bi-file-earmark-text me-1"></i>{{ doc.name }}
+              </a>
+              <div class="text-muted small">
+                Type: {{ doc.docType || 'General' }} | 
+                Uploaded: {{ doc.uploadedAt | date:'short' }}
+              </div>
+            </div>
+            <button
+              class="btn btn-sm btn-outline-danger ms-2"
+              (click)="deleteDocument(doc.documentId)"
+              title="Delete document">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- No Documents -->
+        <div *ngIf="!loadingDocuments && (!documents || documents.length === 0)" class="alert alert-info mt-2">
+          <i class="bi bi-info-circle me-2"></i>No documents uploaded yet for this client.
         </div>
       </div>
       <div class="modal-footer">

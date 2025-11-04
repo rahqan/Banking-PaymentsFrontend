@@ -51,6 +51,7 @@ export class PaymentApprovalComponent implements OnInit {
     this.loading = true;
     this.paymentService.getAllPaymentsByBank().subscribe({
       next: (payments) => {
+        console.log('Payments from API:', payments);
         this.payments = payments;
         this.calculateStats();
         this.applyFilters();
@@ -63,41 +64,84 @@ export class PaymentApprovalComponent implements OnInit {
     });
   }
 
-  calculateStats(): void {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // calculateStats(): void {
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
 
-    this.pendingCount = this.payments.filter(
-      p => p.status === VerificationStatus.Pending
-    ).length;
+  //   this.pendingCount = this.payments.filter(
+  //     p => p.status === VerificationStatus.Pending
+  //   ).length;
 
-    this.approvedTodayCount = this.payments.filter(p => {
-      const paymentDate = new Date(p.paymentDate);
-      return p.status === VerificationStatus.Approved && paymentDate >= today;
-    }).length;
+  //   this.approvedTodayCount = this.payments.filter(p => {
+  //     const paymentDate = new Date(p.paymentDate);
+  //     return p.status === VerificationStatus.Verified && paymentDate >= today;
+  //   }).length;
 
-    this.rejectedTodayCount = this.payments.filter(p => {
-      const paymentDate = new Date(p.paymentDate);
-      return p.status === VerificationStatus.Rejected && paymentDate >= today;
-    }).length;
-  }
+  //   this.rejectedTodayCount = this.payments.filter(p => {
+  //     const paymentDate = new Date(p.paymentDate);
+  //     return p.status === VerificationStatus.Rejected && paymentDate >= today;
+  //   }).length;
+  // }
+
+
+calculateStats(): void {
+  this.pendingCount = this.payments.filter(
+    p => p.status === VerificationStatus.Pending
+  ).length;
+
+  this.approvedTodayCount = this.payments.filter(
+    p => p.status === VerificationStatus.Verified
+  ).length;
+
+  this.rejectedTodayCount = this.payments.filter(
+    p => p.status === VerificationStatus.Rejected
+  ).length;
+}
+
+
+
+
+
+
+  // applyFilters(): void {
+  //   this.filteredPayments = this.payments.filter(payment => {
+  //     // Status filter
+  //     const matchesStatus = this.statusFilter === 'All' ||
+  //       VerificationStatus[payment.status] === this.statusFilter;
+
+  //     // Amount filter
+  //     const matchesAmount = payment.amount >= this.minAmount &&
+  //       payment.amount <= this.maxAmount;
+
+  //     // Date filter
+  //     const matchesDate = this.matchesDateFilter(payment.paymentDate);
+
+  //     return matchesStatus && matchesAmount && matchesDate;
+  //   });
+  // }
+
 
   applyFilters(): void {
-    this.filteredPayments = this.payments.filter(payment => {
-      // Status filter
-      const matchesStatus = this.statusFilter === 'All' ||
-        VerificationStatus[payment.status] === this.statusFilter;
+  this.filteredPayments = this.payments.filter(payment => {
+    const statusName =
+      typeof payment.status === 'number'
+        ? VerificationStatus[payment.status]
+        : payment.status;
 
-      // Amount filter
-      const matchesAmount = payment.amount >= this.minAmount &&
-        payment.amount <= this.maxAmount;
+    const matchesStatus =
+      this.statusFilter === 'All' || statusName === this.statusFilter;
 
-      // Date filter
-      const matchesDate = this.matchesDateFilter(payment.paymentDate);
+    const matchesAmount =
+      payment.amount >= this.minAmount && payment.amount <= this.maxAmount;
 
-      return matchesStatus && matchesAmount && matchesDate;
-    });
-  }
+    const matchesDate = this.matchesDateFilter(payment.paymentDate);
+
+    return matchesStatus && matchesAmount && matchesDate;
+  });
+
+  this.currentPage = 1;
+}
+
 
   matchesDateFilter(paymentDate: Date): boolean {
     const date = new Date(paymentDate);
@@ -189,7 +233,7 @@ export class PaymentApprovalComponent implements OnInit {
     switch (status) {
       case VerificationStatus.Pending:
         return 'badge bg-warning';
-      case VerificationStatus.Approved:
+      case VerificationStatus.Verified:
         return 'badge bg-success';
       case VerificationStatus.Rejected:
         return 'badge bg-danger';

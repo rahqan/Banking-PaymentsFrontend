@@ -52,8 +52,8 @@ export class BankDashboardComponent implements OnInit {
       next: (clients) => {
         this.clients = clients;
         this.stats.totalClients = clients.length;
-        this.stats.pendingOnboard = clients.filter(c => c.verificationStatus === 'Pending').length;
-        this.stats.verifiedClients = clients.filter(c => c.verificationStatus === 'Approved').length;
+        this.stats.pendingOnboard = clients.filter(c => c.clientVerificationStatus === 'Pending').length;
+        this.stats.verifiedClients = clients.filter(c => c.clientVerificationStatus === 'Verified').length;
       },
       error: (error) => console.error('Error loading clients:', error)
     });

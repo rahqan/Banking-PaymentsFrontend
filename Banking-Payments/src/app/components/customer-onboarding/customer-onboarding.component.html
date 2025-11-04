@@ -33,7 +33,7 @@
       </div>
 
       <!-- Step 1: Basic Information -->
-      <div *ngIf="currentStep === 1">
+      <!-- <div *ngIf="currentStep === 1">
         <h5 class="mb-4">Step 1: Basic Information</h5>
 
         <form #basicInfoForm="ngForm">
@@ -81,7 +81,48 @@
             </div>
           </div>
         </form>
+      </div> -->
+
+
+
+      <!-- Step 1: Basic Information -->
+<div *ngIf="currentStep === 1">
+  <h5 class="mb-4">Step 1: Basic Information</h5>
+
+  <form #basicInfoForm="ngForm">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="clientName" class="form-label">Client Name *</label>
+        <input type="text" class="form-control" id="clientName"
+               name="clientName" [(ngModel)]="clientData.clientName" required>
       </div>
+
+      <div class="col-md-6">
+        <label for="clientEmail" class="form-label">Email *</label>
+        <input type="email" class="form-control" id="clientEmail"
+               name="clientEmail" [(ngModel)]="clientData.clientEmail" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="clientPassword" class="form-label">Password *</label>
+        <input type="password" class="form-control" id="clientPassword"
+               name="clientPassword" [(ngModel)]="clientData.clientPassword" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="clientBusinessType" class="form-label">Business Type *</label>
+        <input type="text" class="form-control" id="clientBusinessType"
+               name="clientBusinessType" [(ngModel)]="clientData.clientBusinessType" required>
+      </div>
+
+      <div class="col-12">
+        <label for="address" class="form-label">Address *</label>
+        <textarea class="form-control" id="address" rows="3"
+                  name="address" [(ngModel)]="clientData.clientAddress" required></textarea>
+      </div>
+    </div>
+  </form>
+</div>
 
       <!-- Step 2: Document Upload -->
       <div *ngIf="currentStep === 2">

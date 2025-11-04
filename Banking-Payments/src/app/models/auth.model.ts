@@ -1,7 +1,7 @@
 export enum Role {
-  SuperAdmin = 0,
-  BankUser = 1,
-  Client = 2
+  SuperAdmin = 1,
+  BankUser = 2,
+  Client = 3
 }
 
 export interface LoginRequest {
@@ -25,4 +25,11 @@ export interface RegisterClientRequest {
   clientAddress: string;
   bankId: number;
   registerationNumber?: string;
+}
+
+
+export interface RegistrationResponse {
+  success: boolean;
+  message: string;
+  userId?: number;
 }

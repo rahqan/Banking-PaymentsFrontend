@@ -29,13 +29,13 @@ export class CustomerOnboardingComponent implements OnInit {
 
   // Step 1: Basic Info
   clientData: ClientCreation = {
-    clientCode: '',
+    // clientCode: '',
     clientName: '',
     clientEmail: '',
-    password: '',
+    clientPassword: '',
     clientBusinessType: '',
     clientAddress: '',
-    bankId: 1, // This should come from AuthService
+   
     registerationNumber: ''
   };
 
@@ -79,7 +79,9 @@ export class CustomerOnboardingComponent implements OnInit {
   // Step 1: Basic Info Validation
   validateBasicInfo(): boolean {
     if (!this.clientData.clientName || !this.clientData.clientEmail ||
-        !this.clientData.clientCode || !this.clientData.password) {
+        // !this.clientData.clientCode ||
+        
+        !this.clientData.clientPassword) {
       this.errorMessage = 'Please fill all required fields';
       return false;
     }
@@ -162,6 +164,31 @@ export class CustomerOnboardingComponent implements OnInit {
       }
     });
   }
+
+
+//   handleFiles(files: File[], docType: string): void {
+//   files.forEach(file => {
+//     if (file.size > 5 * 1024 * 1024) {
+//       alert(`${file.name} is too large. Max size is 5MB.`);
+//       return;
+//     }
+
+//     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+//     if (!allowedTypes.includes(file.type)) {
+//       alert(`${file.name} is not a valid file type. Please upload PDF, JPG, or PNG.`);
+//       return;
+//     }
+
+//     const fileEntry = { file, docType };
+//     this.uploadedFiles.push(fileEntry); // push immediately ✅
+
+//     if (file.type.startsWith('image/')) {
+//       const reader = new FileReader();
+//       reader.onload = (e) => fileEntry['preview'] = e.target?.result as string;
+//       reader.readAsDataURL(file);
+//     }
+//   });
+// }
 
   removeFile(index: number): void {
     this.uploadedFiles.splice(index, 1);

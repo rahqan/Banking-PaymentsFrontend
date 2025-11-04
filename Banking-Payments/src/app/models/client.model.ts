@@ -1,26 +1,21 @@
 export interface Client {
   clientId: number;
-  code: string;
-  name: string;
-  email: string;
-  businessType: string;
-  address: string;
-  registerationNumber: string;
-  verificationStatus: string;
-  createdAt: Date;
-  isActive: boolean;
-  bankId: number;
-  bankUserId: number;
-}
-
-export interface ClientCreation {
-  clientCode: string;
   clientName: string;
   clientEmail: string;
-  password: string;
+  clientBusinessType: string;
+  clientVerificationStatus: string;
+  createdAt: string;
+}
+
+
+export interface ClientCreation {
+  // clientCode: string;
+  clientName: string;
+  clientEmail: string;
+  clientPassword: string;
   clientBusinessType: string;
   clientAddress: string;
-  bankId: number;
+  // bankId: number;
   registerationNumber?: string;
 }
 

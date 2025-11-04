@@ -20,7 +20,7 @@
           <select class="form-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
             <option value="All">All</option>
             <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
+            <option value="Verified">Verified</option>
             <option value="Rejected">Rejected</option>
           </select>
         </div>
@@ -63,7 +63,7 @@
     <div class="col-md-4">
       <div class="card text-center">
         <div class="card-body">
-          <h6 class="text-muted">Approved Today</h6>
+          <h6 class="text-muted">Verified</h6>
           <h3 class="mb-0 text-success">{{ approvedTodayCount }}</h3>
         </div>
       </div>
@@ -71,7 +71,7 @@
     <div class="col-md-4">
       <div class="card text-center">
         <div class="card-body">
-          <h6 class="text-muted">Rejected Today</h6>
+          <h6 class="text-muted">Rejected </h6>
           <h3 class="mb-0 text-danger">{{ rejectedTodayCount }}</h3>
         </div>
       </div>
@@ -108,7 +108,7 @@
           <tbody>
             <tr *ngFor="let payment of paginatedPayments">
               <td>{{ payment.paymentId }}</td>
-              <td>{{ payment.client?.name || 'N/A' }}</td>
+              <td>{{ payment.client?.clientName || 'N/A' }}</td>
               <td>{{ payment.beneficiary?.name || 'N/A' }}</td>
               <td>₹{{ payment.amount | number:'1.2-2' }}</td>
               <td>
@@ -176,8 +176,8 @@
 
           <div class="col-md-6 mb-3">
             <h6>From (Client):</h6>
-            <p class="mb-1"><strong>{{ selectedPayment.client?.name || 'N/A' }}</strong></p>
-            <p class="text-muted small mb-0">{{ selectedPayment.client?.email || 'N/A' }}</p>
+            <p class="mb-1"><strong>{{ selectedPayment.client?.clientName || 'N/A' }}</strong></p>
+            <p class="text-muted small mb-0">{{ selectedPayment.client?.clientEmail || 'N/A' }}</p>
           </div>
 
           <div class="col-md-6 mb-3">

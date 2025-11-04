@@ -84,7 +84,7 @@
                class="list-group-item list-group-item-action">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="mb-1">{{ payment.client?.name || 'N/A' }}</h6>
+                  <h6 class="mb-1">{{ payment.client?.clientName || 'N/A' }}</h6>
                   <small class="text-muted">Amount: ₹{{ payment.amount | number:'1.2-2' }}</small>
                 </div>
                 <span class="badge bg-warning">Pending</span>
@@ -115,12 +115,12 @@
                  class="list-group-item">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="mb-1">{{ client.name }}</h6>
-                  <small class="text-muted">{{ client.email }}</small>
+                  <h6 class="mb-1">{{ client.clientName }}</h6>
+                  <small class="text-muted">{{ client.clientEmail }}</small>
                 </div>
-                <span [class]="'badge ' + (client.verificationStatus === 'Approved' ? 'bg-success' :
-                                           client.verificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
-                  {{ client.verificationStatus }}
+                <span [class]="'badge ' + (client.clientVerificationStatus === 'Verified' ? 'bg-success' :
+                                           client.clientVerificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+                  {{ client.clientVerificationStatus }}
                 </span>
               </div>
             </div>
