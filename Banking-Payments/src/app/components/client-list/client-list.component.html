@@ -1,0 +1,165 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Client Management</h2>
+    <a routerLink="/bank/clients/onboard" class="btn btn-primary">
+      <i class="bi bi-person-plus"></i> Onboard New Client
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Search</label>
+          <input type="text" class="form-control" placeholder="Search by name or email"
+                 [(ngModel)]="searchTerm" (input)="onSearchChange()">
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="loadClients()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Total Clients</h6>
+          <h3 class="mb-0">{{ filteredClients.length }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Table -->
+  <div class="card">
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border" role="status"></div>
+        <p class="mt-2">Loading clients...</p>
+      </div>
+
+      <div *ngIf="!loading && paginatedClients.length === 0" class="text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-1"></i>
+        <p class="mt-2">No clients found</p>
+      </div>
+
+      <div *ngIf="!loading && paginatedClients.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Business Type</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of paginatedClients">
+              <td>{{ client.clientId }}</td>
+              <td>{{ client.name }}</td>
+              <td>{{ client.email }}</td>
+              <td>{{ client.businessType }}</td>
+              <td>
+                <span [class]="'badge ' + (client.verificationStatus === 'Approved' ? 'bg-success' :
+                                           client.verificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+                  {{ client.verificationStatus }}
+                </span>
+              </td>
+              <td>{{ client.createdAt | date:'short' }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="openActionModal(client)">
+                  <i class="bi bi-gear"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteClient(client.clientId)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && paginatedClients.length > 0" class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+          {{ Math.min(currentPage * itemsPerPage, filteredClients.length) }}
+          of {{ filteredClients.length }} clients
+        </div>
+        <nav>
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="previousPage()">Previous</button>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">{{ currentPage }} / {{ totalPages }}</span>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="nextPage()">Next</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal fade" [class.show]="showActionModal" [style.display]="showActionModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showActionModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Client Actions</h5>
+        <button type="button" class="btn-close" (click)="closeActionModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedClient">
+        <h6>{{ selectedClient.name }}</h6>
+        <p class="text-muted">{{ selectedClient.email }}</p>
+        <p>Current Status: <span [class]="'badge ' + (selectedClient.verificationStatus === 'Approved' ? 'bg-success' :
+                                                      selectedClient.verificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+          {{ selectedClient.verificationStatus }}
+        </span></p>
+
+        <hr>
+
+        <h6>Update Status:</h6>
+        <div class="d-grid gap-2">
+          <button class="btn btn-success" (click)="updateClientStatus('Approved')">
+            <i class="bi bi-check-circle"></i> Approve
+          </button>
+          <button class="btn btn-warning" (click)="updateClientStatus('Pending')">
+            <i class="bi bi-clock"></i> Set Pending
+          </button>
+          <button class="btn btn-danger" (click)="updateClientStatus('Rejected')">
+            <i class="bi bi-x-circle"></i> Reject
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeActionModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showActionModal" *ngIf="showActionModal"></div>

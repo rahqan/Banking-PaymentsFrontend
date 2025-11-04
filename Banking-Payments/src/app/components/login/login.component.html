@@ -1,0 +1,45 @@
+<!-- LOGIN COMPONENT HTML -->
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow-lg" style="max-width: 400px; width: 100%;">
+    <div class="card-body p-5">
+      <h2 class="text-center mb-4">Bank User Login</h2>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="username"
+            name="username"
+            [(ngModel)]="credentials.username"
+            required
+            email>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            [(ngModel)]="credentials.password"
+            required>
+        </div>
+
+        <div class="alert alert-danger" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100"
+          [disabled]="loading || !loginForm.valid">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ loading ? 'Logging in...' : 'Login' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

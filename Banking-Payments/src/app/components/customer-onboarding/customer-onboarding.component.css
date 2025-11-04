@@ -1,0 +1,22 @@
+.progress {
+  background-color: #e9ecef;
+}
+
+.border-primary {
+  border-color: #0d6efd !important;
+  border-width: 2px !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.list-group-item {
+  border-left: 3px solid #667eea;
+}
+
+input[type="file"] {
+  cursor: pointer;
+}
