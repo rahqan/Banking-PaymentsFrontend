@@ -1,0 +1,88 @@
+<!-- src/app/components/super-admin/layout/super-admin-layout.component.html -->
+<div class="wrapper">
+  <!-- Sidebar -->
+  <nav [class.collapsed]="sidebarCollapsed" class="sidebar bg-dark">
+    <div class="sidebar-header p-3 text-white">
+      <h4 class="mb-0">
+        <i class="bi bi-bank2"></i>
+        <span *ngIf="!sidebarCollapsed"> Banking System</span>
+      </h4>
+      <small *ngIf="!sidebarCollapsed" class="text-muted">Super Admin</small>
+    </div>
+
+    <ul class="nav flex-column p-2">
+      <li class="nav-item">
+        <a
+          routerLink="/super-admin/dashboard"
+          routerLinkActive="active"
+          class="nav-link text-white">
+          <i class="bi bi-speedometer2"></i>
+          <span *ngIf="!sidebarCollapsed"> Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          routerLink="/super-admin/banks"
+          [class.active]="isActiveRoute('/banks')"
+          class="nav-link text-white">
+          <i class="bi bi-bank"></i>
+          <span *ngIf="!sidebarCollapsed"> Banks</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          href="#"
+          class="nav-link text-white disabled"
+          title="Coming Soon">
+          <i class="bi bi-file-earmark-bar-graph"></i>
+          <span *ngIf="!sidebarCollapsed"> Reports</span>
+          <span *ngIf="!sidebarCollapsed" class="badge bg-secondary ms-2">Soon</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="header bg-white border-bottom">
+      <div class="d-flex justify-content-between align-items-center px-3 py-2">
+        <button class="btn btn-link text-dark" (click)="toggleSidebar()">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="dropdown">
+            <button
+              class="btn btn-link text-dark dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle fs-4"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item disabled" href="#">Profile</a></li>
+              <li><a class="dropdown-item disabled" href="#">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer bg-light border-top text-center py-3">
+      <small class="text-muted">
+        Version 1.0 |
+        <a href="#" class="text-decoration-none">Support</a> |
+        <a href="#" class="text-decoration-none">Privacy</a>
+      </small>
+    </footer>
+  </div>
+</div>

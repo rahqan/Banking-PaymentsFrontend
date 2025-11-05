@@ -1,0 +1,167 @@
+<!-- src/app/components/super-admin/bank-list/bank-list.component.html -->
+<div class="container-fluid py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a href="#">Banks</a></li>
+      <li class="breadcrumb-item active">List</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Banks Management</h2>
+    <button class="btn btn-primary" (click)="addBank()">
+      <i class="bi bi-plus-circle"></i> Add Bank
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Search</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name or code..."
+              [(ngModel)]="searchTerm"
+              (input)="onSearchChange()">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Client Count</label>
+          <select class="form-select" [(ngModel)]="clientCountFilter" (change)="applyFilters()">
+            <option value="all">All</option>
+            <option value="low">Low (0-50)</option>
+            <option value="medium">Medium (51-100)</option>
+            <option value="high">High (100+)</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="resetFilters()">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-body">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading banks...</p>
+      </div>
+
+      <!-- Table Content -->
+      <div *ngIf="!loading" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Status</th>
+              <th>Clients</th>
+              <th>Contact Email</th>
+              <th>Contact Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let bank of getPaginatedBanks()">
+              <td>{{ bank.bankId }}</td>
+              <td>{{ bank.name }}</td>
+              <td>{{ bank.code }}</td>
+              <td>
+                <span [class]="getStatusBadgeClass(bank.isActive)">
+                  {{ getStatusText(bank.isActive) }}
+                </span>
+              </td>
+              <td>
+                <!-- <span class="badge bg-info">{{ bank.clientCount || 0 }}</span> -->
+              </td>
+              <td>{{ bank.contactEmail || 'N/A' }}</td>
+              <td>{{ bank.contactPhone || 'N/A' }}</td>
+              <td>
+                <div class="dropdown">
+                  <button
+                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    [id]="'dropdown-' + bank.bankId"
+                    data-bs-toggle="dropdown">
+                    Actions
+                  </button>
+                  <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdown-' + bank.bankId">
+                    <li>
+                      <a class="dropdown-item" (click)="viewBank(bank)">
+                        <i class="bi bi-eye"></i> View Bank Users
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="editBank(bank)">
+                        <i class="bi bi-pencil"></i> Edit
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item text-danger" (click)="deleteBank(bank)">
+                        <i class="bi bi-trash"></i> Delete
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <a class="dropdown-item text-muted" (click)="generateReports(bank)">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Reports (Coming Soon)
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="getPaginatedBanks().length === 0">
+              <td colspan="8" class="text-center text-muted py-4">
+                No banks found
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && filteredBanks.length > 0" class="d-flex justify-content-between align-items-center mt-3">
+        <button
+          class="btn btn-outline-primary"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+          &lt; Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button
+          class="btn btn-outline-primary"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+          Next &gt;
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

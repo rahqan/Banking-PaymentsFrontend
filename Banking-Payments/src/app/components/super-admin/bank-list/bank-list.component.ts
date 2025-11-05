@@ -1,0 +1,156 @@
+// src/app/components/super-admin/bank-list/bank-list.component.ts
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { BankService } from '../../../services/bank.service';
+import { BankDTO } from '../../../models/bank.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-bank-list',
+  standalone:true,
+  imports:[CommonModule,RouterOutlet,FormsModule],
+  templateUrl: './bank-list.component.html',
+  styleUrls: ['./bank-list.component.css']
+})
+export class BankListComponent implements OnInit {
+  banks: BankDTO[] = [];
+  filteredBanks: BankDTO[] = [];
+  loading = true;
+
+  // Filters
+  searchTerm = '';
+  statusFilter = 'all'; // 'all', 'active', 'inactive'
+  clientCountFilter = 'all'; // 'all', 'low', 'medium', 'high'
+
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 1;
+
+  constructor(
+    private bankService: BankService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.loadBanks();
+  }
+
+  loadBanks(): void {
+    this.loading = true;
+    this.bankService.getAllBanksWithClientCount().subscribe({
+      next: (banks) => {
+        this.banks = banks;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading banks:', err);
+        alert('Failed to load banks');
+        this.loading = false;
+      }
+    });
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.banks];
+
+    // Search filter
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(bank =>
+        bank.name.toLowerCase().includes(term) ||
+        bank.code.toLowerCase().includes(term)
+      );
+    }
+
+    // Status filter
+    if (this.statusFilter === 'active') {
+      filtered = filtered.filter(bank => bank.isActive);
+    } else if (this.statusFilter === 'inactive') {
+      filtered = filtered.filter(bank => !bank.isActive);
+    }
+
+    // // Client count filter
+    // if (this.clientCountFilter === 'low') {
+    //   filtered = filtered.filter(bank => (bank.clientCount || 0) >= 0 && (bank.clientCount || 0) <= 50);
+    // } else if (this.clientCountFilter === 'medium') {
+    //   filtered = filtered.filter(bank => (bank.clientCount || 0) > 50 && (bank.clientCount || 0) <= 100);
+    // } else if (this.clientCountFilter === 'high') {
+    //   filtered = filtered.filter(bank => (bank.clientCount || 0) > 100);
+    // }
+
+    this.filteredBanks = filtered;
+    this.totalPages = Math.ceil(this.filteredBanks.length / this.itemsPerPage);
+    this.currentPage = 1;
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = 'all';
+    this.clientCountFilter = 'all';
+    this.applyFilters();
+  }
+
+  getPaginatedBanks(): BankDTO[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.filteredBanks.slice(startIndex, endIndex);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  viewBank(bank: BankDTO): void {
+    this.router.navigate(['/super-admin/banks', bank.bankId, 'users']);
+  }
+
+  editBank(bank: BankDTO): void {
+    this.router.navigate(['/super-admin/banks', 'edit', bank.bankId]);
+  }
+
+  deleteBank(bank: BankDTO): void {
+    if (confirm(`Are you sure you want to delete ${bank.name}?`)) {
+      this.bankService.softDeleteBank(bank.bankId).subscribe({
+        next: () => {
+          alert('Bank deleted successfully');
+          this.loadBanks();
+        },
+        error: (err) => {
+          console.error('Error deleting bank:', err);
+          alert('Failed to delete bank');
+        }
+      });
+    }
+  }
+
+  addBank(): void {
+    this.router.navigate(['/super-admin/banks', 'create']);
+  }
+
+  generateReports(bank: BankDTO): void {
+    alert('Reports feature coming soon!');
+  }
+
+  getStatusBadgeClass(isActive: boolean): string {
+    return isActive ? 'badge bg-success' : 'badge bg-secondary';
+  }
+
+  getStatusText(isActive: boolean): string {
+    return isActive ? 'Active' : 'Inactive';
+  }
+}

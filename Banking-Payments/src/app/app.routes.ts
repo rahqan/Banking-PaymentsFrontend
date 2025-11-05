@@ -47,6 +47,13 @@
 
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { SuperAdminLayoutComponent } from './components/super-admin/super-admin-layout/super-admin-layout.component';
+import { SuperAdminGuard } from './guards/super-admin.guard';
+import { DashboardComponent } from './components/super-admin/dashboard/dashboard.component';
+import { BankListComponent } from './components/super-admin/bank-list/bank-list.component';
+import { BankFormComponent } from './components/super-admin/bank-form/bank-form.component';
+import { BankUsersComponent } from './components/super-admin/bank-users/bank-users.component';
+import { BankUserFormComponent } from './components/super-admin/bank-user-form/bank-user-form.component';
 
 export const routes: Routes = [
   {
@@ -89,5 +96,19 @@ export const routes: Routes = [
     path: '',
     redirectTo: '/bank/dashboard',
     pathMatch: 'full'
+  },{
+    path: 'super-admin',
+    component: SuperAdminLayoutComponent,
+    // canActivate: [SuperAdminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'banks', component: BankListComponent },
+      { path: 'banks/create', component: BankFormComponent },
+      { path: 'banks/edit/:id', component: BankFormComponent },
+      { path: 'banks/:bankId/users', component: BankUsersComponent },
+      { path: 'banks/:bankId/users/create', component: BankUserFormComponent },
+      { path: 'banks/:bankId/users/edit/:userId', component: BankUserFormComponent }
+    ]
   }
 ];

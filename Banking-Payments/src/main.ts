@@ -1,6 +1,29 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-   import { appConfig } from './app/app.config';
-   import { AppComponent } from './app/app.component';
+// import { bootstrapApplication } from '@angular/platform-browser';
+//    import { appConfig } from './app/app.config';
+//    import { AppComponent } from './app/app.component';
 
-   bootstrapApplication(AppComponent, appConfig)
-     .catch((err) => console.error(err));
+//    bootstrapApplication(AppComponent, appConfig)
+//      .catch((err) => console.error(err));
+
+
+     // src/main.ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { importProvidersFrom } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { provideRouter } from '@angular/router';
+import { NgChartsModule } from 'ng2-charts';
+import { routes } from './app/app.routes';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    importProvidersFrom(
+      HttpClientModule,
+      FormsModule,
+      ReactiveFormsModule,
+      NgChartsModule
+    ),
+    provideRouter(routes)
+  ]
+});
