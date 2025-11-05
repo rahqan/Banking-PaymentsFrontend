@@ -1,0 +1,114 @@
+.card {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input-group-text {
+  border-right: none;
+}
+
+.form-control {
+  border-left: none;
+}
+
+.form-control:focus {
+  border-color: #ced4da;
+  box-shadow: none;
+}
+
+.input-group:focus-within .input-group-text {
+  border-color: #667eea;
+}
+
+.input-group:focus-within .form-control {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+/* Role Selection Styling */
+.role-selection {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.form-check-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.form-check-inline {
+  margin-right: 1rem;
+}
+
+/* Alert Styling */
+.alert-danger {
+  border-left: 4px solid #dc3545;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+/* Card Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+  .role-selection {
+    padding: 10px;
+  }
+
+  .form-check-inline {
+    display: block;
+    margin-bottom: 10px;
+    margin-right: 0;
+  }
+
+  .card-body {
+    padding: 2rem !important;
+  }
+}

@@ -1,0 +1,246 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Client Management</h2>
+    <a routerLink="/bank/clients/onboard" class="btn btn-primary">
+      <i class="bi bi-person-plus"></i> Onboard New Client
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Verified">Verified</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Search</label>
+          <input type="text" class="form-control" placeholder="Search by name or email"
+                 [(ngModel)]="searchTerm" (input)="onSearchChange()">
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="loadClients()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Total Clients</h6>
+          <h3 class="mb-0">{{ filteredClients.length }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Table -->
+  <div class="card">
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border" role="status"></div>
+        <p class="mt-2">Loading clients...</p>
+      </div>
+
+      <div *ngIf="!loading && paginatedClients.length === 0" class="text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-1"></i>
+        <p class="mt-2">No clients found</p>
+      </div>
+
+      <div *ngIf="!loading && paginatedClients.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Business Type</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of paginatedClients">
+              <td>{{ client.clientId }}</td>
+              <td>{{ client.clientName }}</td>
+              <td>{{ client.clientEmail }}</td>
+              <td>{{ client.clientBusinessType }}</td>
+              <td>
+                <span [class]="'badge ' + (client.clientVerificationStatus === 'Verified' ? 'bg-success' :
+                                           client.clientVerificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+                  {{ client.clientVerificationStatus }}
+                </span>
+              </td>
+              <td>{{ client.createdAt | date:'short' }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="openActionModal(client)">
+                  <i class="bi bi-gear"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteClient(client.clientId)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && paginatedClients.length > 0" class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+          {{ Math.min(currentPage * itemsPerPage, filteredClients.length) }}
+          of {{ filteredClients.length }} clients
+        </div>
+        <nav>
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="previousPage()">Previous</button>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">{{ currentPage }} / {{ totalPages }}</span>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="nextPage()">Next</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Modal -->
+<div class="modal fade" [class.show]="showActionModal" [style.display]="showActionModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showActionModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Client Actions</h5>
+        <button type="button" class="btn-close" (click)="closeActionModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedClient">
+        <h6>{{ selectedClient.clientName }}</h6>
+        <p class="text-muted">{{ selectedClient.clientEmail }}</p>
+        <p>Current Status: 
+          <span [class]="'badge ' + (selectedClient.clientVerificationStatus === 'Verified' ? 'bg-success' :
+                                     selectedClient.clientVerificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+            {{ selectedClient.clientVerificationStatus }}
+          </span>
+        </p>
+
+        <hr>
+
+        <h6>Update Status:</h6>
+        <div class="d-grid gap-2 mb-4">
+          <button class="btn btn-success" (click)="updateClientStatus('Verified')">
+            <i class="bi bi-check-circle"></i> Approve
+          </button>
+          <button class="btn btn-warning" (click)="updateClientStatus('Pending')">
+            <i class="bi bi-clock"></i> Set Pending
+          </button>
+          <button class="btn btn-danger" (click)="updateClientStatus('Rejected')">
+            <i class="bi bi-x-circle"></i> Reject
+          </button>
+        </div>
+
+        <hr>
+
+        <h6>Uploaded Documents:</h6>
+
+        <!-- Upload Section -->
+        <div class="card bg-light mb-3">
+          <div class="card-body">
+            <h6 class="card-title mb-3">
+              <i class="bi bi-cloud-upload me-2"></i>Upload New Document
+            </h6>
+            <div class="row g-2">
+              <div class="col-md-5">
+                <input 
+                  type="file" 
+                  id="fileInput"
+                  class="form-control form-control-sm" 
+                  (change)="onFileSelected($event)"
+                  [disabled]="uploadingDocument">
+              </div>
+              <div class="col-md-4">
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm" 
+                  placeholder="Document type (optional)"
+                  [(ngModel)]="selectedDocType"
+                  [disabled]="uploadingDocument">
+              </div>
+              <div class="col-md-3">
+                <button 
+                  class="btn btn-primary btn-sm w-100" 
+                  (click)="uploadDocument()"
+                  [disabled]="!selectedFile || uploadingDocument">
+                  <span *ngIf="!uploadingDocument">
+                    <i class="bi bi-upload me-1"></i>Upload
+                  </span>
+                  <span *ngIf="uploadingDocument">
+                    <span class="spinner-border spinner-border-sm me-1"></span>Uploading...
+                  </span>
+                </button>
+              </div>
+            </div>
+            <small class="text-muted d-block mt-2">
+              <i class="bi bi-info-circle me-1"></i>Selected: {{ selectedFile?.name || 'No file selected' }}
+            </small>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loadingDocuments" class="text-center py-3">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          <span class="ms-2">Loading documents...</span>
+        </div>
+
+        <!-- Documents List -->
+        <div *ngIf="!loadingDocuments && documents && documents.length > 0" class="document-list border rounded p-2 mt-2" style="max-height: 250px; overflow-y: auto;">
+          <div *ngFor="let doc of documents" class="d-flex justify-content-between align-items-center border-bottom py-2">
+            <div class="flex-grow-1">
+              <a [href]="doc.url" target="_blank" class="fw-semibold text-decoration-none">
+                <i class="bi bi-file-earmark-text me-1"></i>{{ doc.name }}
+              </a>
+              <div class="text-muted small">
+                Type: {{ doc.docType || 'General' }} | 
+                Uploaded: {{ doc.uploadedAt | date:'short' }}
+              </div>
+            </div>
+            <button
+              class="btn btn-sm btn-outline-danger ms-2"
+              (click)="deleteDocument(doc.documentId)"
+              title="Delete document">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- No Documents -->
+        <div *ngIf="!loadingDocuments && (!documents || documents.length === 0)" class="alert alert-info mt-2">
+          <i class="bi bi-info-circle me-2"></i>No documents uploaded yet for this client.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeActionModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showActionModal" *ngIf="showActionModal"></div>

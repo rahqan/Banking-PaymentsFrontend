@@ -1,0 +1,143 @@
+<!-- src/app/components/super-admin/bank-user-form/bank-user-form.component.html -->
+<div class="container-fluid py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/super-admin/banks">Banks</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/super-admin/banks', bankId, 'users']">Bank Users</a></li>
+      <li class="breadcrumb-item active">{{ isEditMode ? 'Edit' : 'Create' }} User</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="mb-4">
+    <h2>{{ isEditMode ? 'Edit' : 'Create' }} Bank User</h2>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <form [formGroup]="bankUserForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <!-- Code -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">User Code <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="code"
+              [class.is-invalid]="isFieldInvalid('code')"
+              placeholder="e.g., BU001">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('code')">
+              {{ getFieldError('code') }}
+            </div>
+            <small class="text-muted" *ngIf="isEditMode">Code cannot be changed</small>
+          </div>
+
+          <!-- Name -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [class.is-invalid]="isFieldInvalid('name')"
+              placeholder="e.g., John Doe">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+              {{ getFieldError('name') }}
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email <span class="text-danger">*</span></label>
+            <input
+              type="email"
+              class="form-control"
+              formControlName="email"
+              [class.is-invalid]="isFieldInvalid('email')"
+              placeholder="e.g., john.doe@bank.com">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+              {{ getFieldError('email') }}
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+            <input
+              type="tel"
+              class="form-control"
+              formControlName="phoneNumber"
+              [class.is-invalid]="isFieldInvalid('phoneNumber')"
+              placeholder="e.g., +91-9876543210">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('phoneNumber')">
+              {{ getFieldError('phoneNumber') }}
+            </div>
+          </div>
+
+          <!-- Password (only in create mode) -->
+          <div class="col-md-6 mb-3" *ngIf="!isEditMode">
+            <label class="form-label">Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control"
+                formControlName="password"
+                [class.is-invalid]="isFieldInvalid('password')"
+                placeholder="Enter password (min 6 characters)">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="togglePasswordVisibility()">
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+              </button>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
+                {{ getFieldError('password') }}
+              </div>
+            </div>
+            <small class="text-muted">Password must be at least 6 characters long</small>
+          </div>
+
+          <div class="col-12" *ngIf="isEditMode">
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle"></i>
+              Password cannot be changed through this form. Contact system administrator for password resets.
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancel()"
+            [disabled]="submitting">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="submitting">
+            <span *ngIf="!submitting">
+              {{ isEditMode ? 'Update' : 'Create' }} User
+            </span>
+            <span *ngIf="submitting">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Saving...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

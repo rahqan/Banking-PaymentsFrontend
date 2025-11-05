@@ -1,0 +1,150 @@
+<!-- src/app/components/super-admin/bank-users/bank-users.component.html -->
+<div class="container-fluid py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/super-admin/banks">Banks</a></li>
+      <li class="breadcrumb-item active">{{ bank?.name || 'Bank' }} Users</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button class="btn btn-outline-secondary me-3" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h2 class="d-inline">Bank Users - {{ bank?.name }}</h2>
+    </div>
+    <button class="btn btn-primary" (click)="addBankUser()">
+      <i class="bi bi-plus-circle"></i> Add Bank User
+    </button>
+  </div>
+
+  <!-- Bank Info Card -->
+  <div class="card mb-4" *ngIf="bank">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <strong>Bank Code:</strong> {{ bank.code }}
+        </div>
+        <div class="col-md-3">
+          <strong>Status:</strong>
+          <span class="badge" [class.bg-success]="bank.isActive" [class.bg-secondary]="!bank.isActive">
+            {{ bank.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div class="col-md-3">
+          <strong>Contact Email:</strong> {{ bank.contactEmail || 'N/A' }}
+        </div>
+        <div class="col-md-3">
+          <strong>Contact Phone:</strong> {{ bank.contactPhone || 'N/A' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <label class="form-label">Search</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name, email, or code..."
+              [(ngModel)]="searchTerm"
+              (input)="onSearchChange()">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="resetFilters()">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-body">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading bank users...</p>
+      </div>
+
+      <!-- Table Content -->
+      <div *ngIf="!loading" class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of getPaginatedUsers()">
+              <td>{{ user.bankUserId }}</td>
+              <td>{{ user.code }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phoneNumber }}</td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="editBankUser(user)"
+                    title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="deleteBankUser(user)"
+                    title="Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="getPaginatedUsers().length === 0">
+              <td colspan="6" class="text-center text-muted py-4">
+                No bank users found for this bank
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && filteredUsers.length > 0" class="d-flex justify-content-between align-items-center mt-3">
+        <button
+          class="btn btn-outline-primary"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+          &lt; Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button
+          class="btn btn-outline-primary"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+          Next &gt;
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

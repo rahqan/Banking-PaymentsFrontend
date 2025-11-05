@@ -1,0 +1,60 @@
+<div class="d-flex vh-100">
+  <!-- Sidebar -->
+  <nav class="sidebar bg-dark text-white" [class.collapsed]="!sidebarOpen">
+    <div class="sidebar-header p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <h5 class="mb-0" *ngIf="sidebarOpen">Bank Portal</h5>
+        <button class="btn btn-sm btn-outline-light" (click)="toggleSidebar()">
+          <i class="bi" [class.bi-chevron-left]="sidebarOpen"
+             [class.bi-chevron-right]="!sidebarOpen"></i>
+        </button>
+      </div>
+    </div>
+
+    <ul class="nav flex-column mt-3">
+      <li class="nav-item">
+        <a routerLink="/bank/dashboard" routerLinkActive="active" class="nav-link text-white">
+          <i class="bi bi-speedometer2 me-2"></i>
+          <span *ngIf="sidebarOpen">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/bank/clients" routerLinkActive="active" class="nav-link text-white">
+          <i class="bi bi-people me-2"></i>
+          <span *ngIf="sidebarOpen">Clients</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/bank/clients/onboard" routerLinkActive="active" class="nav-link text-white">
+          <i class="bi bi-person-plus me-2"></i>
+          <span *ngIf="sidebarOpen">Onboard Client</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/bank/payments" routerLinkActive="active" class="nav-link text-white">
+          <i class="bi bi-credit-card me-2"></i>
+          <span *ngIf="sidebarOpen">Payments</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="mt-auto p-3">
+      <hr class="bg-light">
+      <div class="d-flex align-items-center" *ngIf="sidebarOpen">
+        <i class="bi bi-person-circle fs-4 me-2"></i>
+        <div class="flex-grow-1">
+          <div class="small">{{ userName }}</div>
+        </div>
+      </div>
+      <button class="btn btn-outline-light btn-sm mt-2 w-100" (click)="logout()">
+        <i class="bi bi-box-arrow-right me-2"></i>
+        <span *ngIf="sidebarOpen">Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 overflow-auto">
+    <router-outlet></router-outlet>
+  </div>
+</div>

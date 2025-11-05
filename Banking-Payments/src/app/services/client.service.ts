@@ -12,7 +12,7 @@ export class ClientService {
   private apiUrl = "https://localhost:7234/api/v1";
   constructor(private http:HttpClient) { }
   // private clientId = localStorage.getItem('clientId');
-  private clientId:number = 1;
+  private clientId:number = 2;
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -33,6 +33,10 @@ export class ClientService {
 
   getAllEmployee():Observable<any>{
     return this.http.get<any>(`${this.apiUrl}/get-all-employee/${this.clientId}`);
+  }
+
+  addEmployee(employee:Employee):Observable<Employee>{
+    return this.http.post<Employee>(`${this.apiUrl}/api/`, employee);
   }
 
 }

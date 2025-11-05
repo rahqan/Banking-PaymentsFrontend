@@ -106,6 +106,8 @@ export class ClientComponent implements OnInit {
 
     this.clientService.getAllBeneficiary().subscribe({
       next:(res)=>{
+        console.log(res);
+        
         this.beneficiaries = res;
       },
       error:(error)=>{

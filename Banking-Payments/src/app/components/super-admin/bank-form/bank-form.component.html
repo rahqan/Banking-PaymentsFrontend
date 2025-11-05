@@ -1,0 +1,165 @@
+<!-- src/app/components/super-admin/bank-form/bank-form.component.html -->
+<div class="container-fluid py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/super-admin/banks">Banks</a></li>
+      <li class="breadcrumb-item active">{{ isEditMode ? 'Edit' : 'Create' }} Bank</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="mb-4">
+    <h2>{{ isEditMode ? 'Edit' : 'Create' }} Bank</h2>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <form [formGroup]="bankForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <!-- Code -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Bank Code <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="code"
+              [class.is-invalid]="isFieldInvalid('code')"
+              placeholder="e.g., HDFC0001">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('code')">
+              {{ getFieldError('code') }}
+            </div>
+            <small class="text-muted" *ngIf="isEditMode">Code cannot be changed</small>
+          </div>
+
+          <!-- Name -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Bank Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [class.is-invalid]="isFieldInvalid('name')"
+              placeholder="e.g., HDFC Bank">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+              {{ getFieldError('name') }}
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="col-12 mb-3">
+            <label class="form-label">Headquarters Address <span class="text-danger">*</span></label>
+            <textarea
+              class="form-control"
+              formControlName="address"
+              [class.is-invalid]="isFieldInvalid('address')"
+              rows="3"
+              placeholder="Enter full address"></textarea>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('address')">
+              {{ getFieldError('address') }}
+            </div>
+          </div>
+
+          <!-- PAN Number -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">PAN Number <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="panNumber"
+              [class.is-invalid]="isFieldInvalid('panNumber')"
+              placeholder="e.g., AAAAA1234A">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('panNumber')">
+              {{ getFieldError('panNumber') }}
+            </div>
+          </div>
+
+          <!-- Registration Number -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Registration Number <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="registrationNumber"
+              [class.is-invalid]="isFieldInvalid('registrationNumber')"
+              placeholder="Enter registration number">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('registrationNumber')">
+              {{ getFieldError('registrationNumber') }}
+            </div>
+          </div>
+
+          <!-- Contact Email -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Contact Email</label>
+            <input
+              type="email"
+              class="form-control"
+              formControlName="contactEmail"
+              [class.is-invalid]="isFieldInvalid('contactEmail')"
+              placeholder="e.g., contact@bank.com">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('contactEmail')">
+              {{ getFieldError('contactEmail') }}
+            </div>
+          </div>
+
+          <!-- Contact Phone -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Contact Phone</label>
+            <input
+              type="tel"
+              class="form-control"
+              formControlName="contactPhone"
+              placeholder="e.g., +91-1234567890">
+          </div>
+
+          <!-- Active Status (only in edit mode) -->
+          <div class="col-12 mb-3" *ngIf="isEditMode">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                formControlName="isActive"
+                id="isActive">
+              <label class="form-check-label" for="isActive">
+                Active
+              </label>
+              <small class="d-block text-muted">Uncheck to soft-delete this bank</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancel()"
+            [disabled]="submitting">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="submitting">
+            <span *ngIf="!submitting">
+              {{ isEditMode ? 'Update' : 'Create' }} Bank
+            </span>
+            <span *ngIf="submitting">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Saving...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

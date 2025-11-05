@@ -1,0 +1,148 @@
+<!-- BANK DASHBOARD HTML -->
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Bank Dashboard</h2>
+    <div>
+      <button class="btn btn-outline-secondary me-2">
+        <i class="bi bi-bell"></i> Notifications
+      </button>
+      <button class="btn btn-outline-primary">
+        <i class="bi bi-person-circle"></i> Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Total Clients</h6>
+          <h2 class="mb-0">{{ stats.totalClients }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Pending Onboard</h6>
+          <h2 class="mb-0 text-warning">{{ stats.pendingOnboard }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Verified Clients</h6>
+          <h2 class="mb-0 text-success">{{ stats.verifiedClients }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Payment Approvals</h6>
+          <h2 class="mb-0 text-primary">{{ stats.paymentApprovals }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <h6 class="card-title text-muted">New Docs</h6>
+          <h2 class="mb-0">{{ stats.newDocs }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row g-4">
+    <!-- Pending Payments Widget -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Payment Approvals</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border" role="status"></div>
+          </div>
+
+          <div *ngIf="!loading && pendingPayments.length === 0" class="text-center py-4 text-muted">
+            No pending payments
+          </div>
+
+          <div *ngIf="!loading && pendingPayments.length > 0" class="list-group">
+            <a *ngFor="let payment of pendingPayments"
+               routerLink="/bank/payments"
+               class="list-group-item list-group-item-action">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{ payment.client?.clientName || 'N/A' }}</h6>
+                  <small class="text-muted">Amount: ₹{{ payment.amount | number:'1.2-2' }}</small>
+                </div>
+                <span class="badge bg-warning">Pending</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Onboarding Pipeline -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Recent Clients</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border" role="status"></div>
+          </div>
+
+          <div *ngIf="!loading && clients.length === 0" class="text-center py-4 text-muted">
+            No clients yet
+          </div>
+
+          <div *ngIf="!loading && clients.length > 0" class="list-group">
+            <div *ngFor="let client of clients.slice(0, 5)"
+                 class="list-group-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{ client.clientName }}</h6>
+                  <small class="text-muted">{{ client.clientEmail }}</small>
+                </div>
+                <span [class]="'badge ' + (client.clientVerificationStatus === 'Verified' ? 'bg-success' :
+                                           client.clientVerificationStatus === 'Pending' ? 'bg-warning' : 'bg-danger')">
+                  {{ client.clientVerificationStatus }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="mt-4">
+    <h5 class="mb-3">Quick Actions</h5>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" (click)="navigateToOnboarding()">
+        <i class="bi bi-person-plus"></i> Onboard Customer
+      </button>
+      <button class="btn btn-outline-primary" (click)="navigateToApprovals()">
+        <i class="bi bi-check-circle"></i> View Approvals
+      </button>
+      <button class="btn btn-outline-secondary" (click)="navigateToClients()">
+        <i class="bi bi-people"></i> View All Clients
+      </button>
+    </div>
+  </div>
+</div>
