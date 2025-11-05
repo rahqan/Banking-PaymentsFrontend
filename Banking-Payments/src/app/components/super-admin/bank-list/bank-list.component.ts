@@ -17,6 +17,26 @@ export class BankListComponent implements OnInit {
   banks: BankDTO[] = [];
   filteredBanks: BankDTO[] = [];
   loading = true;
+toggleDropdown(event: Event) {
+  const button = event.currentTarget as HTMLElement;
+  const dropdown = button.nextElementSibling as HTMLElement;
+  dropdown.classList.toggle('show');
+  
+  // Close when clicking outside
+  const closeDropdown = (e: Event) => {
+    if (!button.contains(e.target as Node) && !dropdown.contains(e.target as Node)) {
+      dropdown.classList.remove('show');
+      document.removeEventListener('click', closeDropdown);
+    }
+  };
+  
+  setTimeout(() => document.addEventListener('click', closeDropdown), 0);
+}
+
+  addBankUser(bank: any) {
+  this.router.navigate(['/admin/banks', bank.bankId, 'users', 'create']);
+}
+
 
   // Filters
   searchTerm = '';
@@ -139,7 +159,7 @@ export class BankListComponent implements OnInit {
   }
 
   addBank(): void {
-    this.router.navigate(['/super-admin/banks', 'create']);
+    this.router.navigate(['/admin/banks', 'create']);
   }
 
   generateReports(bank: BankDTO): void {

@@ -6,6 +6,7 @@
       <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
       <li class="breadcrumb-item"><a href="#">Banks</a></li>
       <li class="breadcrumb-item active">List</li>
+      
     </ol>
   </nav>
 
@@ -103,15 +104,16 @@
               <td>{{ bank.contactEmail || 'N/A' }}</td>
               <td>{{ bank.contactPhone || 'N/A' }}</td>
               <td>
+
                 <div class="dropdown">
-                  <button
-                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                    type="button"
-                    [id]="'dropdown-' + bank.bankId"
-                    data-bs-toggle="dropdown">
-                    Actions
-                  </button>
-                  <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdown-' + bank.bankId">
+  <button
+    class="btn btn-sm btn-outline-secondary dropdown-toggle"
+    type="button"
+    [id]="'dropdown-' + bank.bankId"
+    (click)="toggleDropdown($event)">
+    Actions
+  </button>
+  <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdown-' + bank.bankId">
                     <li>
                       <a class="dropdown-item" (click)="viewBank(bank)">
                         <i class="bi bi-eye"></i> View Bank Users
@@ -133,6 +135,11 @@
                         <i class="bi bi-file-earmark-bar-graph"></i> Reports (Coming Soon)
                       </a>
                     </li>
+                    <li>
+  <a class="dropdown-item" (click)="addBankUser(bank)">
+    <i class="bi bi-person-plus"></i> Add Bank User
+  </a>
+</li>
                   </ul>
                 </div>
               </td>

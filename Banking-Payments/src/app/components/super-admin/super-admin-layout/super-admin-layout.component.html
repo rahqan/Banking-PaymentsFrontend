@@ -10,7 +10,7 @@
       <small *ngIf="!sidebarCollapsed" class="text-muted">Super Admin</small>
     </div>
 
-    <ul class="nav flex-column p-2">
+    <!-- <ul class="nav flex-column p-2">
       <li class="nav-item">
         <a
           routerLink="/super-admin/dashboard"
@@ -39,7 +39,41 @@
           <span *ngIf="!sidebarCollapsed" class="badge bg-secondary ms-2">Soon</span>
         </a>
       </li>
-    </ul>
+    </ul> -->
+
+    <ul class="nav flex-column p-2">
+  <li class="nav-item">
+    <a
+      routerLink="/admin/dashboard"
+      routerLinkActive="active"
+      class="nav-link text-white">
+      <i class="bi bi-speedometer2"></i>
+      <span *ngIf="!sidebarCollapsed"> Dashboard</span>
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a
+      routerLink="/admin/banks"
+      [class.active]="isActiveRoute('/banks')"
+      class="nav-link text-white">
+      <i class="bi bi-bank"></i>
+      <span *ngIf="!sidebarCollapsed"> Banks</span>
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a
+      href="#"
+      class="nav-link text-white disabled"
+      title="Coming Soon">
+      <i class="bi bi-file-earmark-bar-graph"></i>
+      <span *ngIf="!sidebarCollapsed"> Reports</span>
+      <span *ngIf="!sidebarCollapsed" class="badge bg-secondary ms-2">Soon</span>
+    </a>
+  </li>
+</ul>
+
   </nav>
 
   <!-- Main Content -->

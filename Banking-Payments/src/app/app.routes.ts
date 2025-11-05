@@ -63,7 +63,7 @@ export const routes: Routes = [
   {
     path: 'bank',
     loadComponent: () => import('./components/layout/layout.component').then(m => m.LayoutComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'dashboard',
@@ -96,19 +96,36 @@ export const routes: Routes = [
     path: '',
     redirectTo: '/bank/dashboard',
     pathMatch: 'full'
-  },{
-    path: 'super-admin',
-    component: SuperAdminLayoutComponent,
+  },
+  // {
+  //   path: 'admin',
+  //   component: SuperAdminLayoutComponent,
     // canActivate: [SuperAdminGuard],
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'banks', component: BankListComponent },
-      { path: 'banks/create', component: BankFormComponent },
-      { path: 'banks/edit/:id', component: BankFormComponent },
-      { path: 'banks/:bankId/users', component: BankUsersComponent },
-      { path: 'banks/:bankId/users/create', component: BankUserFormComponent },
-      { path: 'banks/:bankId/users/edit/:userId', component: BankUserFormComponent }
-    ]
-  }
+  //   children: [
+  //     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  //     { path: 'dashboard', component: DashboardComponent },
+  //     { path: 'banks', component: BankListComponent },
+  //     { path: 'banks/create', component: BankFormComponent },
+  //     { path: 'banks/edit/:id', component: BankFormComponent },
+  //     { path: 'banks/:bankId/users', component: BankUsersComponent },
+  //     { path: 'banks/:bankId/users/create', component: BankUserFormComponent },
+  //     { path: 'banks/:bankId/users/edit/:userId', component: BankUserFormComponent }
+  //   ]
+  // }
+
+  {
+  path: 'admin',
+   canActivate: [SuperAdminGuard],
+  component: SuperAdminLayoutComponent,
+  children: [
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: 'dashboard', component: DashboardComponent },
+    { path: 'banks', component: BankListComponent },
+    { path: 'banks/create', component: BankFormComponent },
+    { path: 'banks/edit/:id', component: BankFormComponent },
+    { path: 'banks/:bankId/users/create', component: BankUserFormComponent }, // ✅ Move before the parent route
+    { path: 'banks/:bankId/users/edit/:userId', component: BankUserFormComponent }, // ✅ Move before the parent route
+    { path: 'banks/:bankId/users', component: BankUsersComponent }
+  ]
+}
 ];
