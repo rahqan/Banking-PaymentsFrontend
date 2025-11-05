@@ -1,0 +1,344 @@
+<div class="dashboard-container">
+  <header class="header">
+    <h1>Client Management Dashboard</h1>
+    <!-- <p>Manage your bank details, employees, beneficiaries</p> -->
+  </header>
+  
+  <div class="tabs">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'bank'"
+      (click)="setActiveTab('bank')">
+      Bank Details
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'employees'"
+      (click)="setActiveTab('employees')">
+      Employees
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'beneficiaries'"
+      (click)="setActiveTab('beneficiaries')">
+      Beneficiaries
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'payments'"
+      (click)="setActiveTab('payments')">
+      Payments
+    </button>
+  </div>
+  
+  <!-- Bank Details Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'bank'">
+    <div class="bank-details-card">
+      <h2>Account Information</h2>
+      <div class="details-grid">
+        <div class="detail-item">
+          <label>Account Holder</label>
+          <p>{{ bankDetails.accountHolder }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Account Number</label>
+          <p>{{ bankDetails.accountNumber }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Bank Name</label>
+          <p>{{ bankDetails.bankName }}</p>
+        </div>
+        <div class="detail-item">
+          <label>IFSC Code</label>
+          <p>{{ bankDetails.ifscCode }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Branch</label>
+          <p>{{ bankDetails.branch }}</p>
+        </div>
+        <div class="detail-item">
+          <label>Account Type</label>
+          <p>{{ bankDetails.accountType }}</p>
+        </div>
+        <div class="detail-item balance">
+          <label>Current Balance</label>
+          <p class="balance-amount">₹{{ bankDetails.balance | number:'1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Employees Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'employees'">
+    <div class="toolbar">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search employees by name, email, or department..."
+        [(ngModel)]="searchTerm">
+      <button class="btn-primary" (click)="openAddEmployeeModal()">
+        + Add Employee
+      </button>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Position</th>
+            <th>Department</th>
+            <th>Salary</th>
+            <th>Join Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of filteredEmployees">
+            <td>{{ employee.name }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.position }}</td>
+            <td>{{ employee.department }}</td>
+            <td>₹{{ employee.salary | number }}</td>
+            <td>{{ employee.joinDate }}</td>
+            <td>
+              <button class="btn-edit" (click)="openEditEmployeeModal(employee)">Edit</button>
+              <button class="btn-delete" (click)="deleteEmployee(employee.id)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredEmployees.length === 0">
+            <td colspan="7" class="no-data">No employees found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Beneficiaries Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'beneficiaries'">
+    <div class="toolbar">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search beneficiaries by name, bank, or account number..."
+        [(ngModel)]="searchTerm">
+      <button class="btn-primary" (click)="openAddBeneficiaryModal()">
+        + Add Beneficiary
+      </button>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Account Number</th>
+            <th>IFSC Code</th>
+            <th>Bank Name</th>
+            <th>Relationship</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let beneficiary of filteredBeneficiaries">
+            <td>{{ beneficiary.name }}</td>
+            <td>{{ beneficiary.accountNumber }}</td>
+            <td>{{ beneficiary.ifscCode }}</td>
+            <td>{{ beneficiary.bankName }}</td>
+            <td>{{ beneficiary.relationShip }}</td>
+            <td>
+              <button class="btn-edit" (click)="openEditBeneficiaryModal(beneficiary)">Edit</button>
+              <button class="btn-delete" (click)="deleteBeneficiary(beneficiary.beneficiaryId)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredBeneficiaries.length === 0">
+            <td colspan="6" class="no-data">No beneficiaries found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Payments Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'payments'">
+    <div class="toolbar">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search payments by beneficiary, transaction ID, or status..."
+        [(ngModel)]="searchTerm">
+      <button class="btn-primary" (click)="openMakePaymentModal()">
+        + Make Payment
+      </button>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Beneficiary</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payment of filteredPayments">
+            <td><strong>{{ payment.transactionId }}</strong></td>
+            <td>{{ payment.beneficiaryName }}</td>
+            <td class="amount-cell">₹{{ payment.amount | number:'1.2-2' }}</td>
+            <td>{{ payment.date }}</td>
+            <td>
+              <span [class]="'status-badge ' + getStatusClass(payment.status)">
+                {{ payment.status }}
+              </span>
+            </td>
+            <td>{{ payment.remarks }}</td>
+          </tr>
+          <tr *ngIf="filteredPayments.length === 0">
+            <td colspan="6" class="no-data">No payments found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Employee Modal -->
+  <div class="modal-overlay" *ngIf="showEmployeeModal" (click)="closeEmployeeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}</h2>
+        <button class="close-btn" (click)="closeEmployeeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" [(ngModel)]="currentEmployee.name" required>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" [(ngModel)]="currentEmployee.email" required>
+        </div>
+        <div class="form-group">
+          <label>Position *</label>
+          <input type="text" [(ngModel)]="currentEmployee.position" required>
+        </div>
+        <div class="form-group">
+          <label>Department *</label>
+          <input type="text" [(ngModel)]="currentEmployee.department" required>
+        </div>
+        <div class="form-group">
+          <label>Salary *</label>
+          <input type="number" [(ngModel)]="currentEmployee.salary" required>
+        </div>
+        <div class="form-group">
+          <label>Join Date *</label>
+          <input type="date" [(ngModel)]="currentEmployee.joinDate" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeEmployeeModal()">Cancel</button>
+        <button class="btn-primary" (click)="saveEmployee()">
+          {{ isEditMode ? 'Update' : 'Add' }} Employee
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Beneficiary Modal -->
+  <div class="modal-overlay" *ngIf="showBeneficiaryModal" (click)="closeBeneficiaryModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ isEditMode ? 'Edit Beneficiary' : 'Add New Beneficiary' }}</h2>
+        <button class="close-btn" (click)="closeBeneficiaryModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" [(ngModel)]="currentBeneficiary.name" required>
+        </div>
+        <div class="form-group">
+          <label>Account Number *</label>
+          <input type="text" [(ngModel)]="currentBeneficiary.accountNumber" required>
+        </div>
+        <div class="form-group">
+          <label>IFSC Code *</label>
+          <input type="text" [(ngModel)]="currentBeneficiary.ifscCode" required>
+        </div>
+        <div class="form-group">
+          <label>Bank Name *</label>
+          <input type="text" [(ngModel)]="currentBeneficiary.bankName" required>
+        </div>
+        <div class="form-group">
+          <label>Relationship *</label>
+          <input type="text" [(ngModel)]="currentBeneficiary.relationShip" placeholder="e.g., Vendor, Supplier">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeBeneficiaryModal()">Cancel</button>
+        <button class="btn-primary" (click)="saveBeneficiary()">
+          {{ isEditMode ? 'Update' : 'Add' }} Beneficiary
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Payment Modal -->
+  <div class="modal-overlay" *ngIf="showPaymentModal" (click)="closePaymentModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Make Payment</h2>
+        <button class="close-btn" (click)="closePaymentModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="balance-info">
+          <span>Available Balance:</span>
+          <strong>₹{{ bankDetails.balance | number:'1.2-2' }}</strong>
+        </div>
+        
+        <div class="form-group">
+          <label>Select Beneficiary *</label>
+          <select [(ngModel)]="currentPayment.beneficiaryId" required>
+            <option value="0" disabled>-- Select Beneficiary --</option>
+            <option *ngFor="let beneficiary of beneficiaries" [value]="beneficiary.beneficiaryId">
+              {{ beneficiary.name }} ({{ beneficiary.bankName }})
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group" *ngIf="currentPayment.beneficiaryId > 0">
+          <label>Beneficiary Details</label>
+          <div class="beneficiary-info">
+            <p><strong>Account:</strong> {{ getSelectedBeneficiary()?.accountNumber }}</p>
+            <p><strong>IFSC:</strong> {{ getSelectedBeneficiary()?.ifscCode }}</p>
+            <p><strong>Bank:</strong> {{ getSelectedBeneficiary()?.bankName }}</p>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Amount *</label>
+          <input type="number" [(ngModel)]="currentPayment.amount" placeholder="Enter amount" min="1" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Payment Date *</label>
+          <input type="date" [(ngModel)]="currentPayment.date" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Remarks</label>
+          <textarea [(ngModel)]="currentPayment.remarks" rows="3" placeholder="Enter payment purpose or remarks"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closePaymentModal()">Cancel</button>
+        <button class="btn-primary" (click)="makePayment()">
+          Process Payment
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
