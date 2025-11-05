@@ -129,6 +129,10 @@ toggleDropdown(event: Event) {
     }
   }
 
+
+
+
+
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -136,11 +140,12 @@ toggleDropdown(event: Event) {
   }
 
   viewBank(bank: BankDTO): void {
-    this.router.navigate(['/super-admin/banks', bank.bankId, 'users']);
+    
+    this.router.navigate(['/admin/banks', bank.bankId, 'users']);
   }
 
   editBank(bank: BankDTO): void {
-    this.router.navigate(['/super-admin/banks', 'edit', bank.bankId]);
+    this.router.navigate(['/admin/banks', 'edit', bank.bankId]);
   }
 
   deleteBank(bank: BankDTO): void {

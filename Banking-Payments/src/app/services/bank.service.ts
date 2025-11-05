@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BankDTO, CreateBankDTO, UpdateBankDTO } from '../models/bank.model';
 import { environment } from '../../environments/environment';
+import { BankUserDTO } from '../models/bank-user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,11 @@ export class BankService {
   getAllBanks(): Observable<BankDTO[]> {
     return this.http.get<BankDTO[]>(this.apiUrl);
   }
+  // In bank.service.ts
+getBankUsersByBankId(bankId: number): Observable<BankUserDTO[]> {
+  return this.http.get<BankUserDTO[]>(`${this.apiUrl}/banks/${bankId}/users`);
+}
+
 
   getAllBanksWithClientCount(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/with-clients`);
