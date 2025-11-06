@@ -1,3 +1,6 @@
+
+
+
 <div class="d-flex vh-100">
   <!-- Sidebar -->
   <nav class="sidebar bg-dark text-white" [class.collapsed]="!sidebarOpen">
@@ -36,14 +39,20 @@
           <span *ngIf="sidebarOpen">Payments</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a routerLink="/bank/reports" routerLinkActive="active" class="nav-link text-white">
+          <i class="bi bi-file-earmark-bar-graph me-2"></i>
+          <span *ngIf="sidebarOpen">Reports</span>
+        </a>
+      </li>
     </ul>
 
     <div class="mt-auto p-3">
       <hr class="bg-light">
       <div class="d-flex align-items-center" *ngIf="sidebarOpen">
-        <i class="bi bi-person-circle fs-4 me-2"></i>
+        <!-- <i class="bi bi-person-circle fs-4 me-2"></i> -->
         <div class="flex-grow-1">
-          <div class="small">{{ userName }}</div>
+          <!-- <div class="small">{{ userName }}</div> -->
         </div>
       </div>
       <button class="btn btn-outline-light btn-sm mt-2 w-100" (click)="logout()">

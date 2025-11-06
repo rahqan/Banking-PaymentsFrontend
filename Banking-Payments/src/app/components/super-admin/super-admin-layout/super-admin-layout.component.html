@@ -1,8 +1,7 @@
-<!-- src/app/components/super-admin/layout/super-admin-layout.component.html -->
 <div class="wrapper">
   <!-- Sidebar -->
-  <nav [class.collapsed]="sidebarCollapsed" class="sidebar bg-dark">
-    <div class="sidebar-header p-3 text-white">
+  <nav [class.collapsed]="sidebarCollapsed" class="sidebar bg-dark d-flex flex-column">
+    <div class="sidebar-header p-3 text-white border-bottom">
       <h4 class="mb-0">
         <i class="bi bi-bank2"></i>
         <span *ngIf="!sidebarCollapsed"> Banking System</span>
@@ -10,70 +9,51 @@
       <small *ngIf="!sidebarCollapsed" class="text-muted">Super Admin</small>
     </div>
 
-    <!-- <ul class="nav flex-column p-2">
+    <ul class="nav flex-column p-2 flex-grow-1">
       <li class="nav-item">
         <a
-          routerLink="/super-admin/dashboard"
+          routerLink="/admin/dashboard"
           routerLinkActive="active"
           class="nav-link text-white">
           <i class="bi bi-speedometer2"></i>
           <span *ngIf="!sidebarCollapsed"> Dashboard</span>
         </a>
       </li>
+
       <li class="nav-item">
         <a
-          routerLink="/super-admin/banks"
+          routerLink="/admin/banks"
           [class.active]="isActiveRoute('/banks')"
           class="nav-link text-white">
           <i class="bi bi-bank"></i>
           <span *ngIf="!sidebarCollapsed"> Banks</span>
         </a>
       </li>
+
       <li class="nav-item">
         <a
-          href="#"
-          class="nav-link text-white disabled"
-          title="Coming Soon">
+          routerLink="/admin/reports"
+          routerLinkActive="active"
+          class="nav-link text-white">
           <i class="bi bi-file-earmark-bar-graph"></i>
           <span *ngIf="!sidebarCollapsed"> Reports</span>
-          <span *ngIf="!sidebarCollapsed" class="badge bg-secondary ms-2">Soon</span>
         </a>
       </li>
-    </ul> -->
+    </ul>
 
-    <ul class="nav flex-column p-2">
-  <li class="nav-item">
-    <a
-      routerLink="/admin/dashboard"
-      routerLinkActive="active"
-      class="nav-link text-white">
-      <i class="bi bi-speedometer2"></i>
-      <span *ngIf="!sidebarCollapsed"> Dashboard</span>
-    </a>
-  </li>
-
-  <li class="nav-item">
-    <a
-      routerLink="/admin/banks"
-      [class.active]="isActiveRoute('/banks')"
-      class="nav-link text-white">
-      <i class="bi bi-bank"></i>
-      <span *ngIf="!sidebarCollapsed"> Banks</span>
-    </a>
-  </li>
-
-  <li class="nav-item">
-    <a
-      href="#"
-      class="nav-link text-white disabled"
-      title="Coming Soon">
-      <i class="bi bi-file-earmark-bar-graph"></i>
-      <span *ngIf="!sidebarCollapsed"> Reports</span>
-      <span *ngIf="!sidebarCollapsed" class="badge bg-secondary ms-2">Soon</span>
-    </a>
-  </li>
-</ul>
-
+    <!-- Logout section -->
+    <div class="p-3 border-top mt-auto">
+      <div class="d-flex align-items-center mb-2" *ngIf="!sidebarCollapsed">
+        <!-- <i class="bi bi-person-circle fs-4 me-2 text-white"></i> -->
+        <div class="flex-grow-1">
+          <!-- <div class="small text-white">{{ userName }}</div> -->
+        </div>
+      </div>
+      <button class="btn btn-outline-light btn-sm w-100" (click)="logout()">
+        <i class="bi bi-box-arrow-right me-2"></i>
+        <span *ngIf="!sidebarCollapsed">Logout</span>
+      </button>
+    </div>
   </nav>
 
   <!-- Main Content -->
@@ -85,7 +65,7 @@
           <i class="bi bi-list fs-4"></i>
         </button>
 
-        <div class="d-flex align-items-center gap-3">
+        <!-- <div class="d-flex align-items-center gap-3">
           <div class="dropdown">
             <button
               class="btn btn-link text-dark dropdown-toggle"
@@ -101,7 +81,7 @@
               <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
             </ul>
           </div>
-        </div>
+        </div> -->
       </div>
     </header>
 

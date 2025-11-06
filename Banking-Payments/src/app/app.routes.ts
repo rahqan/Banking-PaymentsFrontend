@@ -1,5 +1,4 @@
-
-
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { SuperAdminLayoutComponent } from './components/super-admin/super-admin-layout/super-admin-layout.component';
@@ -52,6 +51,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'reports',
+        loadComponent: () =>
+          import('./components/bank-reports/bank-reports.component').then(
+            (m) => m.BankReportsComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
@@ -64,8 +70,8 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path:'client/dashboard',
-    component:ClientComponent
+    path: 'client/dashboard',
+    component: ClientComponent
   },
   {
     path: 'admin',
@@ -80,6 +86,13 @@ export const routes: Routes = [
       { path: 'banks/:bankId/users/create', component: BankUserFormComponent },
       { path: 'banks/:bankId/users/edit/:userId', component: BankUserFormComponent },
       { path: 'banks/:bankId/users', component: BankUsersComponent },
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('./components/super-admin/reports/reports.component').then(
+            (m) => m.AdminReportsComponent
+          ),
+      },
     ],
   },
   {

@@ -1,3 +1,5 @@
+import { VerificationStatus } from "./payment.model";
+
 export interface Client {
   clientId: number;
   clientName: string;
@@ -20,6 +22,7 @@ export interface ClientCreation {
 }
 
 export interface ClientVerificationRequest {
-  verificationStatus: string;
+  verificationStatus: VerificationStatus;
   notes?: string;
 }
+

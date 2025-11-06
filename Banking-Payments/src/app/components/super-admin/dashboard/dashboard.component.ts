@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
     totalBanks: 0,
     activeBanks: 0,
     activeBankUsers: 0,
-    reportsGenerated: 0
+    // reportsGenerated: 0
   };
 
   bankDistribution: BankDistribution[] = [];

@@ -1,3 +1,5 @@
+import { VerificationStatus } from "./payment.model";
+
 interface Payment {
   id: number;
   beneficiaryId: number;
@@ -5,6 +7,7 @@ interface Payment {
   amount: number;
   date: string;
   status: 'Completed' | 'Pending' | 'Failed';
+  // status:VerificationStatus
   transactionId: string;
   remarks: string;
 }

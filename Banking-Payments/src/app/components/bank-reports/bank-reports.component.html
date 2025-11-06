@@ -1,0 +1,531 @@
+<!-- src/app/components/bank-reports/bank-reports.component.html -->
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2><i class="bi bi-file-earmark-bar-graph"></i> Reports & Analytics</h2>
+      <p class="text-muted">Generate and download detailed reports</p>
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'transactions'"
+        (click)="switchTab('transactions')">
+        <i class="bi bi-arrow-left-right"></i> Transactions
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'onboarding'"
+        (click)="switchTab('onboarding')">
+        <i class="bi bi-person-check"></i> Customer Onboarding
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'payments'"
+        (click)="switchTab('payments')">
+        <i class="bi bi-check-circle"></i> Payment Approvals
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'activity'"
+        (click)="switchTab('activity')">
+        <i class="bi bi-graph-up"></i> Client Activity
+      </button>
+    </li>
+  </ul>
+
+<!-- Transactions Tab -->
+<div *ngIf="activeTab === 'transactions'" class="card">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0"><i class="bi bi-arrow-left-right"></i> Transaction Reports</h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="startDate">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [(ngModel)]="endDate">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Client ID (Optional)</label>
+        <input type="number" class="form-control" [(ngModel)]="clientId" placeholder="Leave blank for all">
+      </div>
+      <div class="col-md-3 d-flex align-items-end gap-2">
+        <button class="btn btn-primary" (click)="clientId ? loadClientTransactions() : loadAllTransactions()" [disabled]="loading">
+          <i class="bi bi-search"></i> Generate
+        </button>
+        <button class="btn btn-outline-danger" (click)="clientId ? downloadClientTransactionsPdf() : downloadAllTransactionsPdf()" [disabled]="loading">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Loading report...</p>
+    </div>
+
+    <div *ngIf="!loading && transactions.length > 0">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Payment ID</th>
+              <th>Client</th>
+              <th>Beneficiary</th>
+              <th>Account No.</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Approved By</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of transactions">
+              <td>{{ tx.paymentId }}</td>
+              <td>{{ tx.clientName }}</td>
+              <td>{{ tx.beneficiaryName }}</td>
+              <td>{{ tx.beneficiaryAccountNumber }}</td>
+              <td class="fw-bold">{{ formatCurrency(tx.amount) }}</td>
+              <td><span class="badge bg-info">{{ tx.paymentType }}</span></td>
+              <td>{{ formatDate(tx.paymentDate) }}</td>
+              <td>
+                <span class="badge"
+                  [class.bg-warning]="tx.status === 'Pending'"
+                  [class.bg-success]="tx.status === 'Verified' || tx.status === 'Approved'"
+                  [class.bg-danger]="tx.status === 'Rejected'">
+                  {{ tx.status }}
+                </span>
+              </td>
+              <td>{{ tx.approvedByName || '-' }}</td>
+              <td>{{ tx.remarks || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert-info mt-3">
+        <strong>Total Transactions:</strong> {{ transactions.length }} |
+        <strong>Total Amount:</strong> {{ formatCurrency(getTotalTransactionAmount()) }}
+      </div>
+    </div>
+
+    <div *ngIf="!loading && transactions.length === 0" class="text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-1"></i>
+      <p class="mt-2">No transactions found for the selected period</p>
+    </div>
+  </div>
+</div>
+
+<!-- Onboarding Tab -->
+<div *ngIf="activeTab === 'onboarding'" class="card">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0"><i class="bi bi-person-check"></i> Customer Onboarding Report</h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="startDate">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [(ngModel)]="endDate">
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
+        <button class="btn btn-success" (click)="loadOnboardingReport()" [disabled]="loading">
+          <i class="bi bi-search"></i> Generate
+        </button>
+        <button class="btn btn-outline-danger" (click)="downloadOnboardingPdf()" [disabled]="loading">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="mt-2 text-muted">Loading report...</p>
+    </div>
+
+    <div *ngIf="!loading && onboardingReport">
+      <!-- Summary Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Total Onboarded</h6>
+              <h2 class="text-primary">{{ onboardingReport.totalOnboarded }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Approved</h6>
+              <h2 class="text-success">{{ onboardingReport.approvedClients }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Pending</h6>
+              <h2 class="text-warning">{{ onboardingReport.pendingVerifications }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Rejected</h6>
+              <h2 class="text-danger">{{ onboardingReport.rejectedClients }}</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Metrics -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="text-muted">Average Onboarding Time</h6>
+              <h3 class="text-info">{{ onboardingReport.averageOnboardingDays }} days</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="text-muted">Documents Uploaded</h6>
+              <h3 class="text-info">{{ onboardingReport.documentsUploaded }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Details Table -->
+      <div class="table-responsive">
+        <h6 class="mb-3">Client Details</h6>
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Client ID</th>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Business Type</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Approved By</th>
+              <th>Documents</th>
+              <th>Days to Verify</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of onboardingReport.clientDetails">
+              <td>{{ client.clientId }}</td>
+              <td><span class="badge bg-secondary">{{ client.clientCode }}</span></td>
+              <td>{{ client.clientName }}</td>
+              <td>{{ client.email }}</td>
+              <td>{{ client.businessType }}</td>
+              <td>
+                <span class="badge"
+                  [class.bg-success]="client.verificationStatus === 'Verified'"
+                  [class.bg-warning]="client.verificationStatus === 'Pending'"
+                  [class.bg-danger]="client.verificationStatus === 'Rejected'">
+                  {{ client.verificationStatus }}
+                </span>
+              </td>
+              <td>{{ formatDate(client.createdAt) }}</td>
+              <td>{{ client.approvedByName || '-' }}</td>
+              <td>{{ client.documentCount }}</td>
+              <td>{{ client.daysToVerify }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Approvals Tab -->
+<div *ngIf="activeTab === 'payments'" class="card">
+  <div class="card-header bg-warning text-dark">
+    <h5 class="mb-0"><i class="bi bi-check-circle"></i> Payment Approval Report</h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="startDate">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [(ngModel)]="endDate">
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
+        <button class="btn btn-warning" (click)="loadPaymentReport()" [disabled]="loading">
+          <i class="bi bi-search"></i> Generate
+        </button>
+        <button class="btn btn-outline-danger" (click)="downloadPaymentPdf()" [disabled]="loading">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-warning" role="status"></div>
+      <p class="mt-2 text-muted">Loading report...</p>
+    </div>
+
+    <div *ngIf="!loading && paymentReport">
+      <!-- Summary Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Total Payments</h6>
+              <h2 class="text-primary">{{ paymentReport.totalPayments }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Pending</h6>
+              <h2 class="text-warning">{{ paymentReport.pendingApprovals }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Approved</h6>
+              <h2 class="text-success">{{ paymentReport.approvedPayments }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Rejected</h6>
+              <h2 class="text-danger">{{ paymentReport.rejectedPayments }}</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Summary -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="text-muted">Total Approved Amount</h6>
+              <h3 class="text-success">{{ formatCurrency(paymentReport.totalApprovedAmount) }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="text-muted">Total Rejected Amount</h6>
+              <h3 class="text-danger">{{ formatCurrency(paymentReport.totalRejectedAmount) }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="text-muted">Avg Approval Time</h6>
+              <h3 class="text-info">{{ paymentReport.averageApprovalTimeHours }} hours</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank User Performance Table -->
+      <div class="mb-4">
+        <h6 class="mb-3">Bank User Performance</h6>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Total Approved</th>
+                <th>Total Rejected</th>
+                <th>Amount Approved</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of paymentReport.bankUserPerformance">
+                <td>{{ user.bankUserId }}</td>
+                <td>{{ user.bankUserName }}</td>
+                <td><span class="badge bg-success">{{ user.totalApproved }}</span></td>
+                <td><span class="badge bg-danger">{{ user.totalRejected }}</span></td>
+                <td class="fw-bold">{{ formatCurrency(user.totalAmountApproved) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- High Value Transactions Table -->
+      <div>
+        <h6 class="mb-3">High Value Transactions</h6>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Payment ID</th>
+                <th>Client Name</th>
+                <th>Beneficiary</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let txn of paymentReport.highValueTransactions">
+                <td>{{ txn.paymentId }}</td>
+                <td>{{ txn.clientName }}</td>
+                <td>{{ txn.beneficiaryName }}</td>
+                <td class="fw-bold text-primary">{{ formatCurrency(txn.amount) }}</td>
+                <td>{{ formatDate(txn.paymentDate) }}</td>
+                <td>
+                  <span class="badge"
+                    [class.bg-warning]="txn.status === 'Pending'"
+                    [class.bg-success]="txn.status === 'Approved'"
+                    [class.bg-danger]="txn.status === 'Rejected'">
+                    {{ txn.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Client Activity Tab -->
+<div *ngIf="activeTab === 'activity'" class="card">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Client Activity Report</h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="startDate">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [(ngModel)]="endDate">
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
+        <button class="btn btn-info" (click)="loadClientActivity()" [disabled]="loading">
+          <i class="bi bi-search"></i> Generate
+        </button>
+        <button class="btn btn-outline-danger" (click)="downloadClientActivityPdf()" [disabled]="loading">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-info" role="status"></div>
+      <p class="mt-2 text-muted">Loading report...</p>
+    </div>
+
+    <div *ngIf="!loading && clientActivity.length > 0">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Client ID</th>
+              <th>Client Code</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Payments</th>
+              <th>Payment Value</th>
+              <th>Employees</th>
+              <th>Beneficiaries</th>
+              <th>Salary Disbursements</th>
+              <th>Salary Value</th>
+              <th>Current Balance</th>
+              <th>Last Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of clientActivity">
+              <td>{{ client.clientId }}</td>
+              <td><span class="badge bg-secondary">{{ client.clientCode }}</span></td>
+              <td>{{ client.clientName }}</td>
+              <td>{{ client.email }}</td>
+              <td>
+                <span class="badge" 
+                  [class.bg-success]="client.isActive" 
+                  [class.bg-secondary]="!client.isActive">
+                  {{ client.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ client.totalPayments }}</td>
+              <td class="fw-bold">{{ formatCurrency(client.totalPaymentValue) }}</td>
+              <td>{{ client.totalEmployees }}</td>
+              <td>{{ client.totalBeneficiaries }}</td>
+              <td>{{ client.totalSalaryDisbursements }}</td>
+              <td class="fw-bold">{{ formatCurrency(client.totalSalaryValue) }}</td>
+              <td class="fw-bold text-primary">{{ formatCurrency(client.currentBalance) }}</td>
+              <td>{{ formatDate(client.lastActivityDate) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <div class="alert alert-info">
+            <strong>Total Clients:</strong> {{ clientActivity.length }} |
+            <strong>Active:</strong> {{ getActiveClientsCount() }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="alert alert-success">
+            <strong>Total Payment Value:</strong> {{ formatCurrency(getTotalPaymentValue()) }} |
+            <strong>Total Salary Value:</strong> {{ formatCurrency(getTotalSalaryValue()) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && clientActivity.length === 0" class="text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-1"></i>
+      <p class="mt-2">No client activity found</p>
+    </div>
+  </div>
+</div>

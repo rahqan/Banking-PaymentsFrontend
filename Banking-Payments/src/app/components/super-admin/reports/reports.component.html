@@ -1,0 +1,499 @@
+<!-- src/app/components/super-admin/reports/reports.component.html -->
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2><i class="bi bi-file-earmark-bar-graph"></i> System Reports & Analytics</h2>
+      <p class="text-muted">Comprehensive system-wide reporting</p>
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'overview'"
+        (click)="switchTab('overview')">
+        <i class="bi bi-speedometer2"></i> System Overview
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'banks'"
+        (click)="switchTab('banks')">
+        <i class="bi bi-bank"></i> Bank Performance
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'volume'"
+        (click)="switchTab('volume')">
+        <i class="bi bi-bar-chart"></i> Transaction Volume
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'financial'"
+        (click)="switchTab('financial')">
+        <i class="bi bi-currency-dollar"></i> Financial Summary
+      </button>
+    </li>
+  </ul>
+
+  <!-- System Overview Tab -->
+  <div *ngIf="activeTab === 'overview'" class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-speedometer2"></i> System Overview</h5>
+      <button class="btn btn-light btn-sm" (click)="downloadSystemOverviewPdf()" [disabled]="loading">
+        <i class="bi bi-file-pdf"></i> Download PDF
+      </button>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Loading overview...</p>
+      </div>
+
+      <div *ngIf="!loading && systemOverview" class="row g-4">
+        <div class="col-md-3">
+          <div class="card text-center border-primary">
+            <div class="card-body">
+              <i class="bi bi-bank fs-1 text-primary"></i>
+              <h6 class="mt-2 text-muted">Total Banks</h6>
+              <h2 class="text-primary">{{ systemOverview.totalBanks }}</h2>
+              <small class="text-success">{{ systemOverview.activeBanks }} Active</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card text-center border-info">
+            <div class="card-body">
+              <i class="bi bi-people fs-1 text-info"></i>
+              <h6 class="mt-2 text-muted">Total Clients</h6>
+              <h2 class="text-info">{{ systemOverview.totalClients }}</h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card text-center border-warning">
+            <div class="card-body">
+              <i class="bi bi-clock-history fs-1 text-warning"></i>
+              <h6 class="mt-2 text-muted">Pending Items</h6>
+              <h3 class="text-warning">{{ systemOverview.pendingPayments + systemOverview.pendingVerifications }}</h3>
+              <small>{{ systemOverview.pendingPayments }} Payments | {{ systemOverview.pendingVerifications }} Verifications</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card text-center border-success">
+            <div class="card-body">
+              <i class="bi bi-currency-rupee fs-1 text-success"></i>
+              <h6 class="mt-2 text-muted">Total Payment Value</h6>
+              <h2 class="text-success">{{ formatCurrency(systemOverview.totalPaymentValue) }}</h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Report Generated:</strong> {{ formatDate(systemOverview.generatedAt) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Bank Performance Tab -->
+<div *ngIf="activeTab === 'banks'" class="card">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0"><i class="bi bi-bank"></i> Bank Performance Report</h5>
+  </div>
+
+  <div class="card-body">
+    <!-- Filters -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label">Start Date </label>
+        <input type="date" class="form-control" [(ngModel)]="startDate">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date </label>
+        <input type="date" class="form-control" [(ngModel)]="endDate">
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
+        <button class="btn btn-success" (click)="loadBankPerformance()" [disabled]="loading">
+          <i class="bi bi-search"></i> Generate
+        </button>
+        <button class="btn btn-outline-danger" (click)="downloadBankPerformancePdf()" [disabled]="loading">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="mt-2 text-muted">Loading report...</p>
+    </div>
+
+    <!-- Data Table -->
+    <div *ngIf="!loading && bankPerformance.length > 0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Bank Name</th>
+              <th>Total Clients</th>
+              <th>Active Clients</th>
+              <th>Transactions</th>
+              <th>Transaction Value</th>
+              <th>Avg Value</th>
+              <th>Pending</th>
+              <th>Approved</th>
+              <th>Rejected</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let bank of bankPerformance">
+              <td class="fw-bold">{{ bank.bankName }}</td>
+              <td>{{ bank.totalClients }}</td>
+              <td><span class="badge bg-success">{{ bank.activeClients }}</span></td>
+              <td>{{ bank.totalPayments }}</td>
+              <td class="fw-bold">{{ formatCurrency(bank.totalPaymentValue) }}</td>
+              <td>{{ formatCurrency(bank.averagePaymentValue) }}</td>
+              <td><span class="badge bg-warning text-dark">{{ bank.pendingPayments }}</span></td>
+              <td><span class="badge bg-success">{{ bank.approvedPayments }}</span></td>
+              <td><span class="badge bg-danger">{{ bank.rejectedPayments }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && bankPerformance.length === 0" class="text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-1"></i>
+      <p class="mt-2">No bank performance data available</p>
+    </div>
+  </div>
+</div>
+
+
+ <!-- Transaction Volume Tab -->
+<div *ngIf="activeTab === 'volume'" class="card">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Transaction Volume Report</h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label">Start Date <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" [(ngModel)]="startDate" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" [(ngModel)]="endDate" required>
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
+        <button class="btn btn-info" (click)="loadTransactionVolume()" [disabled]="loading">
+          <i class="bi bi-search"></i> Generate
+        </button>
+        <button class="btn btn-outline-danger" (click)="downloadTransactionVolumePdf()" [disabled]="loading">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-info" role="status"></div>
+      <p class="mt-2 text-muted">Loading report...</p>
+    </div>
+
+    <div *ngIf="!loading && transactionVolume" class="row g-4">
+      <!-- Summary Cards -->
+      <div class="col-md-3">
+        <div class="card text-center border-primary">
+          <div class="card-body">
+            <h6 class="text-muted">Total Payments</h6>
+            <h2 class="text-primary">{{ transactionVolume.totalPayments }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center border-success">
+          <div class="card-body">
+            <h6 class="text-muted">Total Amount</h6>
+            <h2 class="text-success">{{ formatCurrency(transactionVolume.totalPaymentAmount) }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center border-info">
+          <div class="card-body">
+            <h6 class="text-muted">Average Payment</h6>
+            <h2 class="text-info">{{ formatCurrency(getAveragePayment()) }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center border-secondary">
+          <div class="card-body">
+            <h6 class="text-muted">Salary Disbursements</h6>
+            <h2 class="text-secondary">{{ transactionVolume.totalSalaryDisbursements }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Type Breakdown -->
+      <div class="col-12">
+        <h5><i class="bi bi-credit-card"></i> Payment Type Breakdown</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="card bg-primary bg-opacity-10">
+              <div class="card-body">
+                <h6 class="text-muted">RTGS</h6>
+                <div class="d-flex justify-content-between">
+                  <span class="badge bg-primary">{{ transactionVolume.paymentTypeBreakdown.rtgsCount }} payments</span>
+                  <h5 class="text-primary mb-0">{{ formatCurrency(transactionVolume.paymentTypeBreakdown.rtgsAmount) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card bg-info bg-opacity-10">
+              <div class="card-body">
+                <h6 class="text-muted">IMPS</h6>
+                <div class="d-flex justify-content-between">
+                  <span class="badge bg-info">{{ transactionVolume.paymentTypeBreakdown.impsCount }} payments</span>
+                  <h5 class="text-info mb-0">{{ formatCurrency(transactionVolume.paymentTypeBreakdown.impsAmount) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card bg-success bg-opacity-10">
+              <div class="card-body">
+                <h6 class="text-muted">NEFT</h6>
+                <div class="d-flex justify-content-between">
+                  <span class="badge bg-success">{{ transactionVolume.paymentTypeBreakdown.neftCount }} payments</span>
+                  <h5 class="text-success mb-0">{{ formatCurrency(transactionVolume.paymentTypeBreakdown.neftAmount) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Status Breakdown -->
+      <div class="col-12">
+        <h5><i class="bi bi-check-circle"></i> Payment Status Breakdown</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="card bg-warning bg-opacity-10">
+              <div class="card-body">
+                <h6 class="text-muted">Pending</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h3 class="mb-0">{{ transactionVolume.paymentStatusBreakdown.pendingCount }}</h3>
+                  <h5 class="text-warning mb-0">{{ formatCurrency(transactionVolume.paymentStatusBreakdown.pendingAmount) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card bg-success bg-opacity-10">
+              <div class="card-body">
+                <h6 class="text-muted">Approved</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h3 class="mb-0">{{ transactionVolume.paymentStatusBreakdown.approvedCount }}</h3>
+                  <h5 class="text-success mb-0">{{ formatCurrency(transactionVolume.paymentStatusBreakdown.approvedAmount) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card bg-danger bg-opacity-10">
+              <div class="card-body">
+                <h6 class="text-muted">Rejected</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h3 class="mb-0">{{ transactionVolume.paymentStatusBreakdown.rejectedCount }}</h3>
+                  <h5 class="text-danger mb-0">{{ formatCurrency(transactionVolume.paymentStatusBreakdown.rejectedAmount) }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank-wise Transactions -->
+      <div class="col-12" *ngIf="transactionVolume.bankWiseTransactions.length > 0">
+        <h5><i class="bi bi-bank"></i> Bank-wise Breakdown</h5>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Bank Name</th>
+                <th class="text-end">Transactions</th>
+                <th class="text-end">Total Amount</th>
+                <th class="text-end">Average</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let bank of transactionVolume.bankWiseTransactions">
+                <td><strong>{{ bank.bankName }}</strong></td>
+                <td class="text-end">{{ bank.transactionCount }}</td>
+                <td class="text-end">{{ formatCurrency(bank.totalAmount) }}</td>
+                <td class="text-end">{{ formatCurrency(bank.totalAmount / bank.transactionCount) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Daily Trends Chart -->
+      <div class="col-12" *ngIf="transactionVolume.dailyTrends.length > 0">
+        <h5><i class="bi bi-graph-up"></i> Daily Trends</h5>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th class="text-end">Transactions</th>
+                <th class="text-end">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let trend of transactionVolume.dailyTrends">
+                <td>{{ trend.date | date:'mediumDate' }}</td>
+                <td class="text-end">{{ trend.transactionCount }}</td>
+                <td class="text-end">{{ formatCurrency(trend.totalAmount) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+  <!-- Financial Summary Tab -->
+  <div *ngIf="activeTab === 'financial'" class="card">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0"><i class="bi bi-currency-dollar"></i> Financial Summary Report</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label">Start Date <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" [(ngModel)]="startDate" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">End Date <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" [(ngModel)]="endDate" required>
+        </div>
+        <div class="col-md-4 d-flex align-items-end gap-2">
+          <button class="btn btn-warning" (click)="loadFinancialSummary()" [disabled]="loading">
+            <i class="bi bi-search"></i> Generate
+          </button>
+          <button class="btn btn-outline-danger" (click)="downloadFinancialSummaryPdf()" [disabled]="loading">
+            <i class="bi bi-file-pdf"></i> PDF
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-warning" role="status"></div>
+        <p class="mt-2 text-muted">Loading report...</p>
+      </div>
+
+      <div *ngIf="!loading && financialSummary" class="row g-4">
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Total Payments Value</h6>
+              <h2 class="text-success">{{ formatCurrency(financialSummary.totalPaymentsValue) }}</h2>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Total Transactions</h6>
+              <h2 class="text-primary">{{ getTotalTransactions() }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Highest Transaction</h6>
+              <!-- <h2 class="text-info">{{ formatCurrency(financialSummary.highestTransaction) }}</h2> -->
+               <h2 class="text-info">{{ formatCurrency(getHighestTransaction()) }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h6 class="text-muted">Average Value</h6>
+              <h2 class="text-warning">{{ formatCurrency(getAverageTransactionValue()) }}</h2>
+              <!-- <h2 class="text-warning">{{ formatCurrency(financialSummary.averageTransactionValue) }}</h2> -->
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12" *ngIf="financialSummary.bankWiseFinancials.length > 0">
+          <h5>Bank-wise Breakdown</h5>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>Bank Name</th>
+                  <th>Total Value</th>
+                  <th>Transaction Count</th>
+                  <th>% of Total</th>
+                </tr>
+              </thead>
+              <tbody>
+               <tr *ngFor="let bank of financialSummary.bankWiseFinancials">
+  <td class="fw-bold">{{ bank.bankName }}</td>
+  <td>{{ formatCurrency(bank.totalPaymentValue) }}</td>
+  <td>{{ bank.clientCount }}</td>
+  <td>
+    <div class="progress" style="height: 20px;">
+      <div class="progress-bar bg-success" role="progressbar"
+           [style.width.%]="calculatePercentage(bank.totalPaymentValue, financialSummary!.totalMoneyFlow)">
+        {{ calculatePercentage(bank.totalPaymentValue, financialSummary!.totalMoneyFlow).toFixed(1) }}%
+      </div>
+    </div>
+  </td>
+</tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

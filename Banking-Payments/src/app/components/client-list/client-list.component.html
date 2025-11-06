@@ -145,18 +145,19 @@
 
         <hr>
 
-        <h6>Update Status:</h6>
-        <div class="d-grid gap-2 mb-4">
-          <button class="btn btn-success" (click)="updateClientStatus('Verified')">
-            <i class="bi bi-check-circle"></i> Approve
-          </button>
-          <button class="btn btn-warning" (click)="updateClientStatus('Pending')">
-            <i class="bi bi-clock"></i> Set Pending
-          </button>
-          <button class="btn btn-danger" (click)="updateClientStatus('Rejected')">
-            <i class="bi bi-x-circle"></i> Reject
-          </button>
-        </div>
+      <h6>Update Status:</h6>
+<div class="d-grid gap-2 mb-4">
+  <button class="btn btn-success" (click)="updateClientStatus(VerificationStatus.Verified)">
+    <i class="bi bi-check-circle"></i> Approve
+  </button>
+  <button class="btn btn-warning" (click)="updateClientStatus(VerificationStatus.Pending)">
+    <i class="bi bi-clock"></i> Set Pending
+  </button>
+  <button class="btn btn-danger" (click)="updateClientStatus(VerificationStatus.Rejected)">
+    <i class="bi bi-x-circle"></i> Reject
+  </button>
+</div>
+
 
         <hr>
 
