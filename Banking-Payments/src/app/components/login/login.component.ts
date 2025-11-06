@@ -44,7 +44,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest, Role } from '../../models/auth.model';
-
+ 
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -58,19 +58,19 @@ export class LoginComponent {
     password: '',
     role: Role.BankUser // Default to BankUser
   };
-  
+ 
   errorMessage = '';
   loading = false;
-
+ 
   // Expose Role enum to template
   Role = Role;
-
+ 
   constructor(private authService: AuthService, private router: Router) {}
-
+ 
   onSubmit(): void {
     this.loading = true;
     this.errorMessage = '';
-
+ 
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
         // Navigate based on role
@@ -90,7 +90,7 @@ export class LoginComponent {
       }
     });
   }
-
+ 
   getRoleName(role: Role): string {
     switch (role) {
       case Role.SuperAdmin:

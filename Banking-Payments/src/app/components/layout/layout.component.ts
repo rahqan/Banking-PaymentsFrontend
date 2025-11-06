@@ -12,7 +12,6 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LayoutComponent implements OnInit {
   sidebarOpen = true;
-  userName = 'Bank User';
 
   constructor(
     private authService: AuthService,

@@ -360,6 +360,7 @@ import { BankUserService } from '../../services/bank-user.service';
 import { Client, ClientVerificationRequest } from '../../models/client.model';
 import { DocumentService } from '../../services/document.service';
 import { Document } from '../../models/document.model';
+import { VerificationStatus } from '../../models/payment.model';
 
 @Component({
   selector: 'app-client-list',
@@ -370,6 +371,8 @@ import { Document } from '../../models/document.model';
 })
 export class ClientListComponent implements OnInit {
   public Math = Math;
+  VerificationStatus = VerificationStatus;
+
   clients: Client[] = [];
   filteredClients: Client[] = [];
   selectedClient: Client | null = null;
@@ -399,7 +402,9 @@ export class ClientListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadClients();
+    
   }
+
 
   loadClients(): void {
     this.loading = true;
@@ -450,7 +455,7 @@ export class ClientListComponent implements OnInit {
     this.selectedDocType = '';
   }
 
-  updateClientStatus(status: string): void {
+  updateClientStatus(status: VerificationStatus): void {
     if (!this.selectedClient) return;
 
     const request: ClientVerificationRequest = {

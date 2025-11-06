@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class SuperAdminLayoutComponent {
   sidebarCollapsed = false;
+  
 
   constructor(
     private authService: AuthService,

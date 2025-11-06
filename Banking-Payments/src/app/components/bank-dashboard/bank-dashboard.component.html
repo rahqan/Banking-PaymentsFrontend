@@ -4,12 +4,12 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Bank Dashboard</h2>
     <div>
-      <button class="btn btn-outline-secondary me-2">
+      <!-- <button class="btn btn-outline-secondary me-2">
         <i class="bi bi-bell"></i> Notifications
-      </button>
-      <button class="btn btn-outline-primary">
+      </button> -->
+      <!-- <button class="btn btn-outline-primary">
         <i class="bi bi-person-circle"></i> Profile
-      </button>
+      </button> -->
     </div>
   </div>
 
@@ -51,14 +51,15 @@
       </div>
     </div>
 
-    <div class="col-md-2">
+    <!-- <div class="col-md-2">
       <div class="card text-center h-100">
         <div class="card-body">
           <h6 class="card-title text-muted">New Docs</h6>
           <h2 class="mb-0">{{ stats.newDocs }}</h2>
         </div>
       </div>
-    </div>
+    </div> -->
+    
   </div>
 
   <!-- Main Content -->
@@ -140,7 +141,7 @@
       <button class="btn btn-outline-primary" (click)="navigateToApprovals()">
         <i class="bi bi-check-circle"></i> View Approvals
       </button>
-      <button class="btn btn-outline-secondary" (click)="navigateToClients()">
+      <button class="btn btn-outline-primary" (click)="navigateToClients()">
         <i class="bi bi-people"></i> View All Clients
       </button>
     </div>

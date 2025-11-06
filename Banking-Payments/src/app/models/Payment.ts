@@ -1,3 +1,5 @@
+import { VerificationStatus } from "./payment.model";
+
 interface Payment {
   paymentId: number;
   amount:number;
