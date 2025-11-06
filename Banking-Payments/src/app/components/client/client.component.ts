@@ -6,6 +6,8 @@ import Payment from '../../models/Payment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientService } from '../../services/client.service';
+import PaymentDTO from '../../models/PaymentDTO';
+import { PaymentType, VerificationStatus } from '../../models/payment.model';
 
 @Component({
   selector: 'app-client',
@@ -19,230 +21,249 @@ export class ClientComponent implements OnInit {
   activeTab: 'bank' | 'employees' | 'beneficiaries' | 'payments' = 'bank';
   searchTerm: string = '';
 
-  constructor(private clientService:ClientService) {
-    
-  }
-  
   // Modals
   showEmployeeModal: boolean = false;
   showBeneficiaryModal: boolean = false;
   showPaymentModal: boolean = false;
   isEditMode: boolean = false;
-  bankDetails: BankDetails
-  = {
-    accountHolder: 'ABC Corporation',
-    accountNumber: '1234567890',
-    bankName: 'State Bank of India',
-    ifscCode: 'SBIN0001234',
-    branch: 'Mumbai Main Branch',
-    accountType: 'Current Account',
-    balance: 5000000
+
+  bankDetails: BankDetails = {
+    accountHolder: '',
+    accountNumber: '',
+    bankName: '',
+    ifscCode: '',
+    branch: '',
+    accountType: '',
+    balance: 0
   };
-
-  beneficiaries!: Beneficiary[] 
-  // = [
-  //   {
-  //     beneficiaryId: 1,
-  //     name: 'Vendor Services Pvt Ltd',
-  //     accountNumber: '9876543210',
-  //     ifscCode: 'HDFC0001234',
-  //     bankName: 'HDFC Bank',
-  //     relationship: 'Vendor',
-  //     clientId:1
-  //   },
-  //   {
-  //     beneficiaryId: 2,
-  //     name: 'Office Supplies Co',
-  //     accountNumber: '5555666677',
-  //     ifscCode: 'ICIC0005678',
-  //     bankName: 'ICICI Bank',
-  //     relationship: 'Supplier',
-  //     clientId:1
-  //   }
-  // ];
-
-  employees: Employee[] = [
-    {
-      id: 1,
-      name: 'Rajesh Kumar',
-      email: 'rajesh@company.com',
-      position: 'Senior Developer',
-      department: 'IT',
-      salary: 80000,
-      joinDate: '2020-01-15'
-    },
-    {
-      id: 2,
-      name: 'Priya Sharma',
-      email: 'priya@company.com',
-      position: 'HR Manager',
-      department: 'Human Resources',
-      salary: 75000,
-      joinDate: '2019-06-20'
-    },
-    {
-      id: 3,
-      name: 'Amit Patel',
-      email: 'amit@company.com',
-      position: 'Accountant',
-      department: 'Finance',
-      salary: 60000,
-      joinDate: '2021-03-10'
-    }
-  ];
   
+  beneficiaries: Beneficiary[] = [];
+  payments: Payment[] = [];
+  employees: Employee[] = [];
+
+  // Pagination
+  employeePage: number = 1;
+  employeePageSize: number = 5;
+
+  get paginatedEmployees(): Employee[] {
+    const filtered = this.filteredEmployees;
+    const start = (this.employeePage - 1) * this.employeePageSize;
+    const end = start + this.employeePageSize;
+    return filtered.slice(start, end);
+  }
+  getMinEmployee():number{
+    return Math.min(this.employeePage * this.employeePageSize, this.filteredEmployees.length);
+  }
+  changeEmployeePage(page: number): void {
+    if (page >= 1 && page <= this.totalEmployeePages) {
+      this.employeePage = page;
+    }
+  }
+  previousEmployeePage(): void {
+    if (this.employeePage > 1) {
+      this.employeePage--;
+    }
+  }
+  nextEmployeePage(): void {
+    if (this.employeePage < this.totalEmployeePages) {
+      this.employeePage++;
+    }
+  }
+  get totalEmployeePages(): number {
+    return Math.ceil(this.filteredEmployees.length / this.employeePageSize);
+  }
+  get employeePageNumbers(): number[] {
+    return Array.from({ length: this.totalEmployeePages }, (_, i) => i + 1);
+  }
+
+
+  beneficiaryPage: number = 1;
+  beneficiaryPageSize: number = 5;
+  
+  paymentPage: number = 1;
+  paymentPageSize: number = 10;
+
+  // Form data
+  currentEmployee: Employee = this.getEmptyEmployee();
+  currentBeneficiary: Beneficiary = this.getEmptyBeneficiary();
+  currentPayment: PaymentDTO = this.getEmptyPayment();
+  selectedBeneficiaryId: number = 0; // Separate variable for dropdown
+
+  constructor(private clientService: ClientService) {}
+  
+
   ngOnInit(): void {
+    this.loadAllData();
+  }
+
+  loadAllData(): void {
+    // Load Bank Details
     this.clientService.getClientBankDetails().subscribe({
-      next:(res)=>{
-       
-        
+      next: (res) => {
         this.bankDetails = res;
-         console.log(res);
+        console.log('Bank Details:', res);
       },
-      error:(error)=>{
-        console.log(error);
+      error: (error) => {
+        console.error('Error loading bank details:', error);
       }
     });
 
+    // Load Beneficiaries
     this.clientService.getAllBeneficiary().subscribe({
-      next:(res)=>{
-        console.log(res);
-        
+      next: (res) => {
         this.beneficiaries = res;
+        console.log('Beneficiaries:', res);
       },
-      error:(error)=>{
-        console.log(error);
-        
+      error: (error) => {
+        console.error('Error loading beneficiaries:', error);
       }
     });
 
+    // Load Employees
     this.clientService.getAllEmployee().subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.employees = res.employees;
+      next: (res) => {
+        this.employees = res.employees || res;
+        console.log('Employees:', res);
+      },
+      error: (error) => {
+        console.error('Error loading employees:', error);
+      }
+    });
+
+    // Load Payments
+    this.clientService.getAllPayments().subscribe({
+      next: (res) => {  
+        this.payments = res;
+        console.log('Payments:', res);
+      },
+      error: (error) => {
+        console.error('Error loading payments:', error);
+        // Initialize with empty array if API fails
+        this.payments = [];
       }
     });
   }
 
-  // Bank Details
-  //  = {
-  //   accountHolder: 'ABC Corporation',
-  //   accountNumber: '1234567890',
-  //   bankName: 'State Bank of India',
-  //   ifscCode: 'SBIN0001234',
-  //   branch: 'Mumbai Main Branch',
-  //   accountType: 'Current Account',
-  //   balance: 5000000
-  // };
-  
-  // Employees
-  // 
-  
-  // Payments
-  payments: Payment[] = [
-    {
-      id: 1,
-      beneficiaryId: 1,
-      beneficiaryName: 'Vendor Services Pvt Ltd',
-      amount: 50000,
-      date: '2024-10-15',
-      status: 'Completed',
-      transactionId: 'TXN001234567',
-      remarks: 'Invoice payment for services'
-    },
-    {
-      id: 2,
-      beneficiaryId: 2,
-      beneficiaryName: 'Office Supplies Co',
-      amount: 25000,
-      date: '2024-10-20',
-      status: 'Completed',
-      transactionId: 'TXN001234568',
-      remarks: 'Office equipment purchase'
-    },
-    {
-      id: 3,
-      beneficiaryId: 1,
-      beneficiaryName: 'Vendor Services Pvt Ltd',
-      amount: 75000,
-      date: '2024-10-28',
-      status: 'Pending',
-      transactionId: 'TXN001234569',
-      remarks: 'Monthly retainer fee'
-    }
-  ];
-  
-  // Form data
-  currentEmployee: Employee = this.getEmptyEmployee();
-  currentBeneficiary: Beneficiary = this.getEmptyBeneficiary();
-  currentPayment: Payment = this.getEmptyPayment();
-  
   // Tab Management
   setActiveTab(tab: 'bank' | 'employees' | 'beneficiaries' | 'payments') {
     this.activeTab = tab;
     this.searchTerm = '';
   }
+
+  // ==================== EMPLOYEE METHODS ====================
   
-  // Employee Methods
   getEmptyEmployee(): Employee {
     return {
-      id: 0,
+      employeeId: 0,
+      employeeCode:'',
       name: '',
       email: '',
       position: '',
       department: '',
       salary: 0,
-      joinDate: ''
+      joinDate: '',
+      accountNumber:'',
+      ifscCode:'',
+      address:'',
+      clientId:0,
     };
   }
-  
+
   get filteredEmployees(): Employee[] {
+    if (!this.employees || this.employees.length === 0) return [];
     if (!this.searchTerm) return this.employees;
-    
+
     return this.employees.filter(emp =>
-      emp.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      emp.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      emp.department.toLowerCase().includes(this.searchTerm.toLowerCase())
+      emp.name?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      emp.email?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      emp.department?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
-  
+
   openAddEmployeeModal() {
+    console.log('Opening Add Employee Modal');
     this.isEditMode = false;
     this.currentEmployee = this.getEmptyEmployee();
     this.showEmployeeModal = true;
+    console.log('Modal state:', this.showEmployeeModal);
   }
-  
+
   openEditEmployeeModal(employee: Employee) {
+    console.log('Opening Edit Employee Modal', employee);
     this.isEditMode = true;
     this.currentEmployee = { ...employee };
     this.showEmployeeModal = true;
   }
-  
+
   saveEmployee() {
-    if (this.isEditMode) {
-      const index = this.employees.findIndex(e => e.id === this.currentEmployee.id);
-      if (index !== -1) {
-        this.employees[index] = { ...this.currentEmployee };
-      }
-    } else {
-      this.currentEmployee.id = Math.max(...this.employees.map(e => e.id), 0) + 1;
-      this.employees.push({ ...this.currentEmployee });
+    // Validation
+    if (!this.currentEmployee.name || !this.currentEmployee.email || 
+        !this.currentEmployee.position || !this.currentEmployee.department || !this.currentEmployee.accountNumber
+      || !this.currentEmployee.ifscCode || !this.currentEmployee.address) {
+      alert('Please fill all required fields');
+      return;
     }
-    this.closeEmployeeModal();
+
+    if (this.isEditMode) {
+      // Update Employee - Call API
+      // this.clientService.updateEmployee(this.currentEmployee.id, this.currentEmployee).subscribe({
+      //   next: (res) => {
+      //     console.log('Employee updated:', res);
+      //     const index = this.employees.findIndex(e => e.id === this.currentEmployee.id);
+      //     if (index !== -1) {
+      //       this.employees[index] = { ...this.currentEmployee };
+      //     }
+      //     alert('Employee updated successfully');
+      //     this.closeEmployeeModal();
+      //   },
+      //   error: (error) => {
+      //     console.error('Error updating employee:', error);
+      //     alert('Failed to update employee');
+      //   }
+      // });
+    } else {
+      // Add Employee - Call API
+      this.currentEmployee.clientId = 2;
+      this.currentEmployee.employeeCode = "EM023";
+      this.clientService.addEmployee(this.currentEmployee).subscribe({
+        next: (res) => {
+          console.log('Employee added:', res);
+          this.employees.push(res);
+          alert('Employee added successfully');
+          this.closeEmployeeModal();
+        },
+        error: (error) => {
+          console.error('Error adding employee:', error);
+          alert('Failed to add employee');
+        }
+      });
+    }
   }
-  
+
   deleteEmployee(id: number) {
     if (confirm('Are you sure you want to delete this employee?')) {
-      this.employees = this.employees.filter(e => e.id !== id);
+      // this.clientService.deleteEmployee(id).subscribe({
+      //   next: () => {
+      //     console.log('Employee deleted');
+      //     this.employees = this.employees.filter(e => e.id !== id);
+      //     alert('Employee deleted successfully');
+      //   },
+      //   error: (error) => {
+      //     console.error('Error deleting employee:', error);
+      //     alert('Failed to delete employee');
+      //   }
+      // });
     }
   }
-  
+
   closeEmployeeModal() {
+    console.log('Closing Employee Modal');
     this.showEmployeeModal = false;
     this.currentEmployee = this.getEmptyEmployee();
   }
-  
-  // Beneficiary Methods
+
+  // ==================== BENEFICIARY METHODS ====================
+
   getEmptyBeneficiary(): Beneficiary {
     return {
       beneficiaryId: 0,
@@ -251,137 +272,212 @@ export class ClientComponent implements OnInit {
       ifscCode: '',
       bankName: '',
       relationShip: '',
-      clientId:0
+      clientId: 0
     };
   }
-  
+
   get filteredBeneficiaries(): Beneficiary[] {
+    if (!this.beneficiaries || this.beneficiaries.length === 0) return [];
     if (!this.searchTerm) return this.beneficiaries;
-    
+
     return this.beneficiaries.filter(ben =>
-      ben.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      ben.bankName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      ben.accountNumber.includes(this.searchTerm)
+      ben.name?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      ben.bankName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      ben.accountNumber?.includes(this.searchTerm)
     );
   }
-  
+
   openAddBeneficiaryModal() {
+    console.log('Opening Add Beneficiary Modal');
     this.isEditMode = false;
     this.currentBeneficiary = this.getEmptyBeneficiary();
     this.showBeneficiaryModal = true;
   }
-  
+
   openEditBeneficiaryModal(beneficiary: Beneficiary) {
+    console.log('Opening Edit Beneficiary Modal', beneficiary);
     this.isEditMode = true;
     this.currentBeneficiary = { ...beneficiary };
     this.showBeneficiaryModal = true;
   }
-  
+
   saveBeneficiary() {
-    if (this.isEditMode) {
-      const index = this.beneficiaries.findIndex(b => b.beneficiaryId === this.currentBeneficiary.beneficiaryId);
-      if (index !== -1) {
-        this.beneficiaries[index] = { ...this.currentBeneficiary };
-      }
-    } else {
-      this.currentBeneficiary.beneficiaryId = Math.max(...this.beneficiaries.map(b => b.beneficiaryId), 0) + 1;
-      this.beneficiaries.push({ ...this.currentBeneficiary });
+    // Validation
+    if (!this.currentBeneficiary.name || !this.currentBeneficiary.accountNumber ||
+        !this.currentBeneficiary.ifscCode || !this.currentBeneficiary.bankName) {
+      alert('Please fill all required fields');
+      return;
     }
-    this.closeBeneficiaryModal();
+
+    if (this.isEditMode) {
+      // Update Beneficiary - Call API
+      // this.clientService.updateBeneficiary(this.currentBeneficiary.beneficiaryId, this.currentBeneficiary).subscribe({
+      //   next: (res) => {
+      //     console.log('Beneficiary updated:', res);
+      //     const index = this.beneficiaries.findIndex(b => b.beneficiaryId === this.currentBeneficiary.beneficiaryId);
+      //     if (index !== -1) {
+      //       this.beneficiaries[index] = { ...this.currentBeneficiary };
+      //     }
+      //     alert('Beneficiary updated successfully');
+      //     this.closeBeneficiaryModal();
+      //   },
+      //   error: (error) => {
+      //     console.error('Error updating beneficiary:', error);
+      //     alert('Failed to update beneficiary');
+      //   }
+      // });
+    } else {
+      // Add Beneficiary - Call API
+      this.currentBeneficiary.clientId = 2;
+      this.clientService.addBeneficiary(this.currentBeneficiary).subscribe({
+        next: (res) => {
+          console.log('Beneficiary added:', res);
+          this.beneficiaries.push(res);
+          alert('Beneficiary added successfully');
+          this.closeBeneficiaryModal();
+        },
+        error: (error) => {
+          console.error('Error adding beneficiary:', error);
+          alert('Failed to add beneficiary');
+        }
+      });
+    }
   }
-  
+
   deleteBeneficiary(id: number) {
     if (confirm('Are you sure you want to delete this beneficiary?')) {
-      this.beneficiaries = this.beneficiaries.filter(b => b.beneficiaryId !== id);
+      // this.clientService.deleteBeneficiary(id).subscribe({
+      //   next: () => {
+      //     console.log('Beneficiary deleted');
+      //     this.beneficiaries = this.beneficiaries.filter(b => b.beneficiaryId !== id);
+      //     alert('Beneficiary deleted successfully');
+      //   },
+      //   error: (error) => {
+      //     console.error('Error deleting beneficiary:', error);
+      //     alert('Failed to delete beneficiary');
+      //   }
+      // });
     }
   }
-  
+
   closeBeneficiaryModal() {
+    console.log('Closing Beneficiary Modal');
     this.showBeneficiaryModal = false;
     this.currentBeneficiary = this.getEmptyBeneficiary();
   }
-  
-  // Payment Methods
-  getEmptyPayment(): Payment {
+
+  // ==================== PAYMENT METHODS ====================
+
+  getEmptyPayment(): PaymentDTO {
+    var temp = new Date();
     return {
-      id: 0,
-      beneficiaryId: 0,
-      beneficiaryName: '',
-      amount: 0,
-      date: '',
-      status: 'Pending',
-      transactionId: '',
-      remarks: ''
+      paymentId: 0,
+      amount:0,
+      paymentDate:temp,
+      status:VerificationStatus.Pending,
+      type:PaymentType.RTGS,
+      beneficiaryId:0,
+      clientId:0,
+      remarks:''
     };
   }
-  
+
   get filteredPayments(): Payment[] {
+    if (!this.payments || this.payments.length === 0) return [];
     if (!this.searchTerm) return this.payments;
-    
+
     return this.payments.filter(payment =>
-      payment.beneficiaryName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      payment.transactionId.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      payment.status.toLowerCase().includes(this.searchTerm.toLowerCase())
+      payment.beneficiary?.name?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      payment.paymentId?.toString().includes(this.searchTerm) ||
+      payment.status?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
-  
+
   openMakePaymentModal() {
+    console.log('Opening Make Payment Modal');
     this.currentPayment = this.getEmptyPayment();
+    this.selectedBeneficiaryId = 0;
+    
     // Set current date
-    const today = new Date().toISOString().split('T')[0];
-    this.currentPayment.date = today;
+    const today = new Date();
+    this.currentPayment.paymentDate = today;
+    
     this.showPaymentModal = true;
+    console.log('Payment Modal state:', this.showPaymentModal);
   }
-  
+
   makePayment() {
-    // Find beneficiary details
-    const beneficiary = this.beneficiaries.find(b => b.beneficiaryId === this.currentPayment.beneficiaryId);
-    if (!beneficiary) {
+    // Validation
+    if (this.selectedBeneficiaryId === 0) {
       alert('Please select a beneficiary');
       return;
     }
-    
-    if (this.currentPayment.amount <= 0) {
+
+    if (!this.currentPayment.amount || this.currentPayment.amount <= 0) {
       alert('Please enter a valid amount');
       return;
     }
-    
+
     if (this.currentPayment.amount > this.bankDetails.balance) {
+      console.log(this.bankDetails.balance + " & " + this.currentPayment.amount);
+      
       alert('Insufficient balance!');
       return;
     }
+
+    // Find beneficiary details
+    const beneficiary = this.beneficiaries.find(b => b.beneficiaryId == this.selectedBeneficiaryId);
+    if (!beneficiary) {
+      alert('Beneficiary not found');
+      return;
+    }
+
+    console.log("Inside => " + this.currentPayment);
     
-    // Create new payment
-    this.currentPayment.id = Math.max(...this.payments.map(p => p.id), 0) + 1;
-    this.currentPayment.beneficiaryName = beneficiary.name;
-    this.currentPayment.status = 'Completed';
-    this.currentPayment.transactionId = 'TXN' + Date.now().toString().slice(-9);
-    
-    // Deduct from balance
-    this.bankDetails.balance -= this.currentPayment.amount;
-    
-    // Add payment to list
-    this.payments.unshift({ ...this.currentPayment });
-    
-    this.closePaymentModal();
-    alert('Payment successful!');
+
+    this.currentPayment.beneficiaryId = this.selectedBeneficiaryId;
+    this.currentPayment.clientId = 2;
+    // Call API to make payment
+    this.clientService.addPayment(this.currentPayment).subscribe({
+      next: (res) => {
+        console.log('Payment successful:', res);
+        
+        // Update local balance
+        this.bankDetails.balance -= this.currentPayment.amount;
+        
+        alert('Payment successful!');
+        this.closePaymentModal();
+        this.loadAllData();
+      },
+      error: (error) => {
+        console.error('Error making payment:', error);
+        alert('Payment failed. Please try again.');
+      }
+    });
   }
-  
+
   closePaymentModal() {
+    console.log('Closing Payment Modal');
     this.showPaymentModal = false;
     this.currentPayment = this.getEmptyPayment();
+    this.selectedBeneficiaryId = 0;
   }
-  
+
   getStatusClass(status: string): string {
-    switch(status) {
-      case 'Completed': return 'status-completed';
-      case 'Pending': return 'status-pending';
-      case 'Failed': return 'status-failed';
+    switch (status?.toLowerCase()) {
+      case 'completed': return 'status-completed';
+      case 'pending': return 'status-pending';
+      case 'failed': return 'status-failed';
       default: return '';
     }
   }
-  
+
   getSelectedBeneficiary(): Beneficiary | undefined {
-    return this.beneficiaries.find(b => b.beneficiaryId === this.currentPayment.beneficiaryId);
+    for (let index = 0; index < this.beneficiaries.length; index++) {
+      if(this.beneficiaries.at(index)?.beneficiaryId == this.selectedBeneficiaryId){
+        return this.beneficiaries.at(index);
+      }
+    }
+    return undefined;
   }
 }

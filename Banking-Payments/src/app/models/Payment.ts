@@ -1,12 +1,14 @@
 interface Payment {
-  id: number;
-  beneficiaryId: number;
-  beneficiaryName: string;
-  amount: number;
-  date: string;
-  status: 'Completed' | 'Pending' | 'Failed';
-  transactionId: string;
-  remarks: string;
+  paymentId: number;
+  amount:number;
+  paymentDate:string;
+  status:string;
+  type:string;
+  remarks:string;
+  beneficiary:{
+    beneficiaryId:number,
+    name:string
+  };
 }
 
 export default Payment;

@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import BankDetails from '../models/BankDetails ';
 import Beneficiary from '../models/Beneficiary';
 import Employee from '../models/Employee';
+import Payment from '../models/Payment';
+import PaymentDTO from '../models/PaymentDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +37,20 @@ export class ClientService {
     return this.http.get<any>(`${this.apiUrl}/get-all-employee/${this.clientId}`);
   }
 
+  getAllPayments():Observable<Payment[]>{
+    return this.http.get<Payment[]>(`${this.apiUrl}/get-all-payment/${this.clientId}`);
+  }
+
   addEmployee(employee:Employee):Observable<Employee>{
-    return this.http.post<Employee>(`${this.apiUrl}/api/`, employee);
+    return this.http.post<Employee>(`${this.apiUrl}/add-employee`, employee);
+  }
+
+  addBeneficiary(beneficiary:Beneficiary):Observable<Beneficiary>{
+    return this.http.post<Beneficiary>(`${this.apiUrl}/add-beneficiary`,beneficiary);
+  }
+
+  addPayment(payment:PaymentDTO):Observable<PaymentDTO>{
+    return this.http.post<PaymentDTO>(`${this.apiUrl}/add-payment`, payment);
   }
 
 }
