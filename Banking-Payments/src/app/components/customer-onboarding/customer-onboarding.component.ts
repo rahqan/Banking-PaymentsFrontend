@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BankUserService } from '../../services/bank-user.service';
 import { DocumentService } from '../../services/document.service';
@@ -107,24 +107,57 @@ clientData: ClientCreation = {
     return true;
   }
 
-  createClient(): void {
-    this.loading = true;
-    this.errorMessage = '';
+ // In your Angular component TypeScript file
 
-    this.bankUserService.createClient(this.clientData).subscribe({
-      next: (client) => {
-        this.createdClientId = client.clientId;
-        this.steps[0].completed = true;
-        this.currentStep = 2;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Failed to create client';
-        this.loading = false;
-      }
-    });
+// Add these to your component class properties:
+@ViewChild('basicInfoForm') basicInfoForm!: NgForm;
+clientId?: number; // Store client ID separately
+
+createClient() {
+  // Check form validity
+  if (!this.basicInfoForm || !this.basicInfoForm.valid) {
+    this.errorMessage = 'Please fill in all required fields';
+    return;
   }
 
+  this.loading = true;
+  this.errorMessage = '';
+
+  this.bankUserService.createClient(this.clientData).subscribe({
+    next: (response: any) => {
+      this.loading = false;
+      // Store the client ID for next steps
+      this.clientId = response.clientId;
+      this.currentStep = 2;
+    },
+    error: (error) => {
+      this.loading = false;
+      console.error('Client creation error:', error);
+      
+      // Handle duplicate email error
+      if (error.status === 400 || error.status === 409) {
+        if (error.error?.message?.includes('duplicate') || 
+            error.error?.message?.includes('already exists') ||
+            error.error?.message?.toLowerCase().includes('email')) {
+          this.errorMessage = 'A client with this email address already exists. Please use a different email.';
+        } else {
+          this.errorMessage = error.error?.message || 'Invalid client information. Please check your input.';
+        }
+      } else if (error.status === 500) {
+        this.errorMessage = 'An error occurred while creating the client. Please try again or contact support.';
+      } else {
+        this.errorMessage = 'Failed to create client. Please try again.';
+      }
+      
+      // Scroll to top to show error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
+
+// Don't forget to add these imports at the top:
+// import { ViewChild } from '@angular/core';
+// import { NgForm } from '@angular/forms';
   // Step 2: Document Upload
   onFileSelect(event: Event, docType: string): void {
     const input = event.target as HTMLInputElement;
