@@ -6,6 +6,7 @@ import Beneficiary from '../models/Beneficiary';
 import Employee from '../models/Employee';
 import Payment from '../models/Payment';
 import PaymentDTO from '../models/PaymentDTO';
+import SalaryDisbursement from '../models/SalaryDisbursement';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,7 @@ import PaymentDTO from '../models/PaymentDTO';
 export class ClientService {
   private apiUrl = "https://localhost:7234/api/v1";
   constructor(private http:HttpClient) { }
-  // private clientId = localStorage.getItem('clientId');
-  private clientId:number = 2;
+  private clientId  = localStorage.getItem('userId');
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -53,4 +53,11 @@ export class ClientService {
     return this.http.post<PaymentDTO>(`${this.apiUrl}/add-payment`, payment);
   }
 
+  deleteEmployee(employeeId:number):Observable<any>{
+    return this.http.delete(`${this.apiUrl}/delete-employee-by-id/${employeeId}`);
+  }
+
+  getSalaryDisbursement():Observable<SalaryDisbursement[]>{
+    return this.http.get<SalaryDisbursement[]>(`${this.apiUrl}/get-salary-disbursement-by-client-id/${this.clientId}`);
+  }
 }

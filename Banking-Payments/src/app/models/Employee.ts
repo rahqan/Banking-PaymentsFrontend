@@ -11,6 +11,7 @@ interface Employee {
   address:string;
   ifscCode:string;
   clientId:number;
+  isActive:boolean;
 }
 
 export default Employee;

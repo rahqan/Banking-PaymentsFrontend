@@ -5,6 +5,7 @@ interface Beneficiary {
   ifscCode: string;
   bankName: string;
   relationShip: string;
+  isActive:boolean;
   clientId : number;
 }
 

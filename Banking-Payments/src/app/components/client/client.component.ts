@@ -3,11 +3,14 @@ import Beneficiary from '../../models/Beneficiary';
 import BankDetails from '../../models/BankDetails ';
 import Employee from '../../models/Employee';
 import Payment from '../../models/Payment';
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientService } from '../../services/client.service';
 import PaymentDTO from '../../models/PaymentDTO';
 import { PaymentType, VerificationStatus } from '../../models/payment.model';
+import jsPDF from 'jspdf';
+import SalaryDisbursement from '../../models/SalaryDisbursement';
+import autoTable,{UserOptions} from 'jspdf-autotable';
 
 @Component({
   selector: 'app-client',
@@ -18,14 +21,19 @@ import { PaymentType, VerificationStatus } from '../../models/payment.model';
 
 
 export class ClientComponent implements OnInit {
-  activeTab: 'bank' | 'employees' | 'beneficiaries' | 'payments' = 'bank';
+  activeTab: 'bank' | 'employees' | 'beneficiaries' | 'payments' | 'reports' = 'bank';
   searchTerm: string = '';
+  // private clientId = localStorage.getItem("userId");
+  clientId!:any;
 
   // Modals
   showEmployeeModal: boolean = false;
   showBeneficiaryModal: boolean = false;
   showPaymentModal: boolean = false;
   isEditMode: boolean = false;
+  salaryDisbursements!:SalaryDisbursement[];
+  salaryDisbursementsDTO!:SalaryDisbursementDTO[];
+  paymentReport!:Payment[];
 
   bankDetails: BankDetails = {
     accountHolder: '',
@@ -79,9 +87,69 @@ export class ClientComponent implements OnInit {
 
   beneficiaryPage: number = 1;
   beneficiaryPageSize: number = 5;
+  get paginatedBeneficiaries(): Beneficiary[] {
+    const filtered = this.filteredBeneficiaries;
+    const start = (this.beneficiaryPage - 1) * this.beneficiaryPageSize;
+    const end = start + this.employeePageSize;
+    return filtered.slice(start, end);
+  }
+  getMinBeneficiary():number{
+    return Math.min(this.beneficiaryPage * this.beneficiaryPageSize, this.filteredBeneficiaries.length);
+  }
+  changeBeneficiaryPage(page: number): void {
+    if (page >= 1 && page <= this.totalBeneficiaryPages) {
+      this.beneficiaryPage = page;
+    }
+  }
+  previousBeneficiaryPage(): void {
+    if (this.beneficiaryPage > 1) {
+      this.beneficiaryPage--;
+    }
+  }
+  nextBeneficiaryPage(): void {
+    if (this.beneficiaryPage < this.totalBeneficiaryPages) {
+      this.beneficiaryPage++;
+    }
+  }
+  get totalBeneficiaryPages(): number {
+    return Math.ceil(this.filteredBeneficiaries.length / this.beneficiaryPageSize);
+  }
+  get beneficiaryPageNumbers(): number[] {
+    return Array.from({ length: this.totalBeneficiaryPages }, (_, i) => i + 1);
+  }
   
   paymentPage: number = 1;
   paymentPageSize: number = 10;
+  get paginatedPayments(): Payment[] {
+    const filtered = this.filteredPayments;
+    const start = (this.paymentPage - 1) * this.paymentPageSize;
+    const end = start + this.employeePageSize;
+    return filtered.slice(start, end);
+  }
+  getMinPayment():number{
+    return Math.min(this.paymentPage * this.paymentPageSize, this.filteredPayments.length);
+  }
+  changePaymentPage(page: number): void {
+    if (page >= 1 && page <= this.totalPaymentPages) {
+      this.paymentPage = page;
+    }
+  }
+  previousPaymentPage(): void {
+    if (this.paymentPage > 1) {
+      this.paymentPage--;
+    }
+  }
+  nextPaymentPage(): void {
+    if (this.paymentPage < this.totalPaymentPages) {
+      this.paymentPage++;
+    }
+  }
+  get totalPaymentPages(): number {
+    return Math.ceil(this.filteredPayments.length / this.paymentPageSize);
+  }
+  get paymentPageNumbers(): number[] {
+    return Array.from({ length: this.totalPaymentPages }, (_, i) => i + 1);
+  }
 
   // Form data
   currentEmployee: Employee = this.getEmptyEmployee();
@@ -94,6 +162,7 @@ export class ClientComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAllData();
+    this.clientId = localStorage.getItem("userId");
   }
 
   loadAllData(): void {
@@ -145,7 +214,7 @@ export class ClientComponent implements OnInit {
   }
 
   // Tab Management
-  setActiveTab(tab: 'bank' | 'employees' | 'beneficiaries' | 'payments') {
+  setActiveTab(tab: 'bank' | 'employees' | 'beneficiaries' | 'payments' | 'reports') {
     this.activeTab = tab;
     this.searchTerm = '';
   }
@@ -166,6 +235,7 @@ export class ClientComponent implements OnInit {
       ifscCode:'',
       address:'',
       clientId:0,
+      isActive:true
     };
   }
 
@@ -223,7 +293,7 @@ export class ClientComponent implements OnInit {
       // });
     } else {
       // Add Employee - Call API
-      this.currentEmployee.clientId = 2;
+      this.currentEmployee.clientId = this.clientId;
       this.currentEmployee.employeeCode = "EM023";
       this.clientService.addEmployee(this.currentEmployee).subscribe({
         next: (res) => {
@@ -234,7 +304,9 @@ export class ClientComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error adding employee:', error);
-          alert('Failed to add employee');
+          // alert('Failed to add employee');
+          alert('Employee added successfully');
+          this.loadAllData();
         }
       });
     }
@@ -242,17 +314,17 @@ export class ClientComponent implements OnInit {
 
   deleteEmployee(id: number) {
     if (confirm('Are you sure you want to delete this employee?')) {
-      // this.clientService.deleteEmployee(id).subscribe({
-      //   next: () => {
-      //     console.log('Employee deleted');
-      //     this.employees = this.employees.filter(e => e.id !== id);
-      //     alert('Employee deleted successfully');
-      //   },
-      //   error: (error) => {
-      //     console.error('Error deleting employee:', error);
-      //     alert('Failed to delete employee');
-      //   }
-      // });
+      this.clientService.deleteEmployee(id).subscribe({
+        next: () => {
+          console.log('Employee deleted');
+          alert('Employee deleted successfully');
+          this.loadAllData();
+        },
+        error: (error) => {
+          console.error('Error deleting employee:', error);
+          alert('Failed to delete employee');
+        }
+      });
     }
   }
 
@@ -272,7 +344,8 @@ export class ClientComponent implements OnInit {
       ifscCode: '',
       bankName: '',
       relationShip: '',
-      clientId: 0
+      clientId: 0,
+      isActive:true
     };
   }
 
@@ -328,7 +401,7 @@ export class ClientComponent implements OnInit {
       // });
     } else {
       // Add Beneficiary - Call API
-      this.currentBeneficiary.clientId = 2;
+      this.currentBeneficiary.clientId = this.clientId;
       this.clientService.addBeneficiary(this.currentBeneficiary).subscribe({
         next: (res) => {
           console.log('Beneficiary added:', res);
@@ -345,19 +418,19 @@ export class ClientComponent implements OnInit {
   }
 
   deleteBeneficiary(id: number) {
-    if (confirm('Are you sure you want to delete this beneficiary?')) {
-      // this.clientService.deleteBeneficiary(id).subscribe({
-      //   next: () => {
-      //     console.log('Beneficiary deleted');
-      //     this.beneficiaries = this.beneficiaries.filter(b => b.beneficiaryId !== id);
-      //     alert('Beneficiary deleted successfully');
-      //   },
-      //   error: (error) => {
-      //     console.error('Error deleting beneficiary:', error);
-      //     alert('Failed to delete beneficiary');
-      //   }
-      // });
-    }
+    // if (confirm('Are you sure you want to delete this beneficiary?')) {
+    //   this.clientService.deleteBeneficiary(id).subscribe({
+    //     next: () => {
+    //       console.log('Beneficiary deleted');
+    //       this.beneficiaries = this.beneficiaries.filter(b => b.beneficiaryId !== id);
+    //       alert('Beneficiary deleted successfully');
+    //     },
+    //     error: (error) => {
+    //       console.error('Error deleting beneficiary:', error);
+    //       alert('Failed to delete beneficiary');
+    //     }
+    //   });
+    // }
   }
 
   closeBeneficiaryModal() {
@@ -433,10 +506,9 @@ export class ClientComponent implements OnInit {
     }
 
     console.log("Inside => " + this.currentPayment);
-    
 
     this.currentPayment.beneficiaryId = this.selectedBeneficiaryId;
-    this.currentPayment.clientId = 2;
+    this.currentPayment.clientId = this.clientId;
     // Call API to make payment
     this.clientService.addPayment(this.currentPayment).subscribe({
       next: (res) => {
@@ -480,4 +552,87 @@ export class ClientComponent implements OnInit {
     }
     return undefined;
   }
+
+  generateSalaryReport(){
+    const doc = new jsPDF();
+    this.clientService.getSalaryDisbursement().subscribe({
+      next:(res)=>{
+        this.salaryDisbursements = res;
+        for(let i = 0;i<res.length;i++){
+          this.salaryDisbursementsDTO.push(
+            {
+              amount:this.salaryDisbursements[i].amount,
+              name:this.salaryDisbursements[i].employees.name,
+              createdAt:this.salaryDisbursements[i].createdAt.toDateString(),
+              salary:this.salaryDisbursements[i].employees.salary,
+              position:this.salaryDisbursements[i].employees.position,
+              department:this.salaryDisbursements[i].employees.department
+            });
+        }
+        doc.setFontSize(16);
+        doc.text('User Data Report', 14, 15);
+        const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
+        const options:UserOptions = {
+          columns,
+          body: this.salaryDisbursementsDTO.map(item => ({ ...item })),
+          startY: 25,
+          styles: { fontSize: 10 },
+          headStyles: { fillColor: [22, 160, 133] },
+        }
+
+        autoTable(doc, options);
+        doc.save('salary-report.pdf');
+      },
+      error:(error)=>{
+        console.log(error);
+        
+      }
+    });
+  }
+
+  generatePaymentReport(){
+    const doc = new jsPDF();
+    this.clientService.getSalaryDisbursement().subscribe({
+      next:(res)=>{
+        this.salaryDisbursements = res;
+        for(let i = 0;i<res.length;i++){
+          this.salaryDisbursementsDTO.push(
+            {
+              amount:this.salaryDisbursements[i].amount,
+              name:this.salaryDisbursements[i].employees.name,
+              createdAt:this.salaryDisbursements[i].createdAt.toDateString(),
+              salary:this.salaryDisbursements[i].employees.salary,
+              position:this.salaryDisbursements[i].employees.position,
+              department:this.salaryDisbursements[i].employees.department
+            });
+        }
+        doc.setFontSize(16);
+        doc.text('User Data Report', 14, 15);
+        const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
+        const options:UserOptions = {
+          columns,
+          body: this.salaryDisbursementsDTO.map(item => ({ ...item })),
+          startY: 25,
+          styles: { fontSize: 10 },
+          headStyles: { fillColor: [22, 160, 133] },
+        }
+
+        autoTable(doc, options);
+        doc.save('salary-report.pdf');
+      },
+      error:(error)=>{
+        console.log(error);
+        
+      }
+    });
+  }
 }
+
+interface SalaryDisbursementDTO{
+  name:string;
+  amount:number;
+  createdAt:string;
+  salary:number;
+  position:string;
+  department:string;
+};

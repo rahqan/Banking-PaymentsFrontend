@@ -29,6 +29,12 @@
       (click)="setActiveTab('payments')">
       Payments
     </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'reports'"
+      (click)="setActiveTab('reports')">
+      Reports
+    </button>
   </div>
   
   <!-- Bank Details Tab -->
@@ -105,7 +111,7 @@
             <td>
               <button class="btn-edit" (click)="openEditEmployeeModal(employee)">Edit</button>
               <button class="btn-delete" (click)="deleteEmployee(employee.employeeId)">Delete</button>
-              <button class="btn-edit"> Salary </button>
+              <button class="btn-add-salary"> Salary </button>
             </td>
           </tr>
           <tr *ngIf="filteredEmployees.length === 0">
@@ -182,6 +188,28 @@
         </tbody>
       </table>
     </div>
+    <div class="pagination" *ngIf="filteredEmployees.length > 0">
+      <div class="pagination-info">
+        Showing {{ (beneficiaryPage - 1) * beneficiaryPageSize + 1 }} to 
+        {{ getMinBeneficiary() }} 
+        of {{ filteredBeneficiaries.length }} beneficiaries
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn" (click)="previousBeneficiaryPage()" [disabled]="beneficiaryPage === 1">
+          Previous
+        </button>
+        <button 
+          *ngFor="let page of beneficiaryPageNumbers" 
+          class="page-btn" 
+          [class.active]="page === beneficiaryPage"
+          (click)="changeBeneficiaryPage(page)">
+          {{ page }}
+        </button>
+        <button class="page-btn" (click)="nextBeneficiaryPage()" [disabled]="beneficiaryPage === totalBeneficiaryPages">
+          Next
+        </button>
+      </div>
+    </div>
   </div>
   
   <!-- Payments Tab -->
@@ -228,6 +256,34 @@
         </tbody>
       </table>
     </div>
+    <div class="pagination" *ngIf="filteredEmployees.length > 0">
+      <div class="pagination-info">
+        Showing {{ (paymentPage - 1) * paymentPageSize + 1 }} to 
+        {{ getMinPayment() }} 
+        of {{ filteredPayments.length }} payments
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn" (click)="previousPaymentPage()" [disabled]="paymentPage === 1">
+          Previous
+        </button>
+        <button 
+          *ngFor="let page of paymentPageNumbers" 
+          class="page-btn" 
+          [class.active]="page === paymentPage" 
+          (click)="changePaymentPage(page)">
+          {{ page }}
+        </button>
+        <button class="page-btn" (click)="nextPaymentPage()" [disabled]="paymentPage === totalPaymentPages">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Report Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'payments'">
+    
   </div>
   
   <!-- Employee Modal -->
