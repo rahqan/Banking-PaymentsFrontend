@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
   <div class="card shadow-lg" style="max-width: 450px; width: 100%;">
     <div class="card-body p-5">
@@ -94,6 +93,14 @@
           </div>
         </div>
 
+        <!-- reCAPTCHA Widget -->
+        <div class="mb-3 d-flex justify-content-center">
+          <div class="g-recaptcha" 
+               data-sitekey="6LeSAgUsAAAAAAPcjpbtGoH0lcgrRUrpyEVMnBPW"
+               data-theme="light">
+          </div>
+        </div>
+
         <!-- Error Message -->
         <div class="alert alert-danger d-flex align-items-center" *ngIf="errorMessage">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -113,8 +120,8 @@
         <!-- Additional Info -->
         <div class="text-center mt-3">
           <small class="text-muted">
-            <i class="bi bi-info-circle me-1"></i>
-            Select your role before signing in
+            <i class="bi bi-shield-check me-1"></i>
+            Protected by reCAPTCHA
           </small>
         </div>
       </form>
