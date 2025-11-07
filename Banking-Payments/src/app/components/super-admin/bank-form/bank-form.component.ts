@@ -78,7 +78,7 @@ export class BankFormComponent implements OnInit {
       error: (err) => {
         console.error('Error loading bank:', err);
         alert('Bank not found');
-        this.router.navigate(['/super-admin/banks']);
+        this.router.navigate(['/admin/banks']);
         this.loading = false;
       }
     });
@@ -112,7 +112,7 @@ export class BankFormComponent implements OnInit {
     this.bankService.createBank(createDto).subscribe({
       next: () => {
         alert('Bank created successfully');
-        this.router.navigate(['/super-admin/banks']);
+        this.router.navigate(['/admin/banks']);
       },
       error: (err) => {
         console.error('Error creating bank:', err);
@@ -138,7 +138,7 @@ export class BankFormComponent implements OnInit {
     this.bankService.updateBank(this.bankId, updateDto).subscribe({
       next: () => {
         alert('Bank updated successfully');
-        this.router.navigate(['/super-admin/banks']);
+        this.router.navigate(['/admin/banks']);
       },
       error: (err) => {
         console.error('Error updating bank:', err);
@@ -149,7 +149,7 @@ export class BankFormComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/super-admin/banks']);
+    this.router.navigate(['/admin/banks']);
   }
 
   isFieldInvalid(fieldName: string): boolean {

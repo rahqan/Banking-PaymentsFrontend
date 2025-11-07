@@ -3,9 +3,9 @@
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
-      <li class="breadcrumb-item"><a routerLink="/super-admin/banks">Banks</a></li>
-      <li class="breadcrumb-item"><a [routerLink]="['/super-admin/banks', bankId, 'users']">Bank Users</a></li>
+      <li class="breadcrumb-item"><a routerLink="/admin/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/admin/banks">Banks</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/admin/banks', bankId, 'users']">Bank Users</a></li>
       <li class="breadcrumb-item active">{{ isEditMode ? 'Edit' : 'Create' }} User</li>
     </ol>
   </nav>

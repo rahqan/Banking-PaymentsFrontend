@@ -7,6 +7,7 @@ import Employee from '../models/Employee';
 import Payment from '../models/Payment';
 import PaymentDTO from '../models/PaymentDTO';
 import SalaryDisbursement from '../models/SalaryDisbursement';
+import { SalaryDisbursementForm } from '../models/SalaryDisbursementForm';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class ClientService {
   private apiUrl = "https://localhost:7234/api/v1";
   constructor(private http:HttpClient) { }
   private clientId  = localStorage.getItem('userId');
+  salaryForm!:SalaryDisbursementForm;
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -29,16 +31,16 @@ export class ClientService {
     return res;
   }
 
-  getAllBeneficiary():Observable<Beneficiary[]>{
-    return this.http.get<Beneficiary[]>(`${this.apiUrl}/get-all-beneficiaries/${this.clientId}`);
+  getAllBeneficiary():Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}/get-all-beneficiaries/${this.clientId}`);
   }
 
   getAllEmployee():Observable<any>{
     return this.http.get<any>(`${this.apiUrl}/get-all-employee/${this.clientId}`);
   }
 
-  getAllPayments():Observable<Payment[]>{
-    return this.http.get<Payment[]>(`${this.apiUrl}/get-all-payment/${this.clientId}`);
+  getAllPayments():Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}/get-all-payment/${this.clientId}`);
   }
 
   addEmployee(employee:Employee):Observable<Employee>{
@@ -60,4 +62,30 @@ export class ClientService {
   getSalaryDisbursement():Observable<SalaryDisbursement[]>{
     return this.http.get<SalaryDisbursement[]>(`${this.apiUrl}/get-salary-disbursement-by-client-id/${this.clientId}`);
   }
+
+  salaryDisburment(salary:SalaryDisbursement):Observable<SalaryDisbursement>{
+    return this.http.post<SalaryDisbursement>(`${this.apiUrl}/individual-salary-disbursement`,salary);
+  }
+
+salaryDisbursementByCSV(file: File, clientId: number): Observable<any>{
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('clientId', clientId.toString());
+    formData.append('batchSize', '10');
+    
+    // Create headers WITHOUT Content-Type for FormData
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      // Uncomment if you need authorization:
+      // 'Authorization': `Bearer ${token}`
+    });
+    // Note: Do NOT set Content-Type for FormData uploads!
+    
+    return this.http.post<any>(
+      `${this.apiUrl}/salary-disbursement-by-batch`, 
+      formData,
+      { headers: headers }
+    );
+}
+
 }

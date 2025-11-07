@@ -76,7 +76,7 @@ export class BankUserFormComponent implements OnInit {
       error: (err) => {
         console.error('Error loading bank user:', err);
         alert('Bank user not found');
-        this.router.navigate(['/super-admin/banks', this.bankId, 'users']);
+        this.router.navigate(['/admin/banks', this.bankId, 'users']);
         this.loading = false;
       }
     });
@@ -108,7 +108,7 @@ export class BankUserFormComponent implements OnInit {
     this.bankService.createBankUser(createDto).subscribe({
       next: () => {
         alert('Bank user created successfully');
-        this.router.navigate(['/super-admin/banks', this.bankId, 'users']);
+        this.router.navigate(['/admin/banks', this.bankId, 'users']);
       },
       error: (err) => {
         console.error('Error creating bank user:', err);
@@ -131,7 +131,7 @@ export class BankUserFormComponent implements OnInit {
     this.bankService.updateBankUser(this.bankUserId, updateDto).subscribe({
       next: () => {
         alert('Bank user updated successfully');
-        this.router.navigate(['/super-admin/banks', this.bankId, 'users']);
+        this.router.navigate(['/admin/banks', this.bankId, 'users']);
       },
       error: (err) => {
         console.error('Error updating bank user:', err);
@@ -142,7 +142,7 @@ export class BankUserFormComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/super-admin/banks', this.bankId, 'users']);
+    this.router.navigate(['/admin/banks', this.bankId, 'users']);
   }
 
   togglePasswordVisibility(): void {

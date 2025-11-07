@@ -32,8 +32,9 @@ export class ClientComponent implements OnInit {
   showPaymentModal: boolean = false;
   isEditMode: boolean = false;
   salaryDisbursements!:SalaryDisbursement[];
-  salaryDisbursementsDTO!:SalaryDisbursementDTO[];
+  salaryDisbursementsDTO:SalaryDisbursementDTO[]=[];
   paymentReport!:Payment[];
+  salaryDisbursement!:SalaryDisbursement;
 
   bankDetails: BankDetails = {
     accountHolder: '',
@@ -204,6 +205,8 @@ export class ClientComponent implements OnInit {
       next: (res) => {  
         this.payments = res;
         console.log('Payments:', res);
+        console.log(this.payments);
+        
       },
       error: (error) => {
         console.error('Error loading payments:', error);
@@ -311,6 +314,23 @@ export class ClientComponent implements OnInit {
       });
     }
   }
+  selectedFile!: File;
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+  
+uploadCsv(){
+    console.log(this.selectedFile);
+    this.clientService.salaryDisbursementByCSV(this.selectedFile, this.clientId).subscribe({
+      next:(next)=>{
+        alert("Salary disbursement successfully");
+      },
+      error:(error)=>{
+        alert("Something went wrong");
+      }
+    });
+}
 
   deleteEmployee(id: number) {
     if (confirm('Are you sure you want to delete this employee?')) {
@@ -325,6 +345,35 @@ export class ClientComponent implements OnInit {
           alert('Failed to delete employee');
         }
       });
+    }
+  }
+
+  salaryDisburment(id:number){
+    if(confirm("Are you sure you want to disperse salary ?")){
+      for(let index = 0; index < this.employees.length;index++){
+        if(this.employees[index].employeeId == id){
+          var j:SalaryDisbursement = {
+            salaryDisbursementId:0,
+            createdAt: new Date(),
+            amount:this.employees[index].salary,
+            employeeId:this.employees[index].employeeId,
+            clientId:this.clientId
+          }
+          this.clientService.salaryDisburment(j).subscribe({
+            next:(res)=>{
+              alert("Salary dispersement successful!!!! ");
+              console.log(res);
+            },
+            error:(error)=>{
+              if (error.status === 409) { // HTTP 409 Conflict
+              alert("Salary cannot be disbursed more than once a month!");
+            } else {
+              alert("Something went wrong!");
+            }
+            }
+          });
+        }
+      }
     }
   }
 
@@ -460,9 +509,12 @@ export class ClientComponent implements OnInit {
     if (!this.searchTerm) return this.payments;
 
     return this.payments.filter(payment =>
-      payment.beneficiary?.name?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      payment.paymentId?.toString().includes(this.searchTerm) ||
-      payment.status?.toLowerCase().includes(this.searchTerm.toLowerCase())
+     String(payment.status)?.toLowerCase()
+.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      String(payment.status)?.toLowerCase()
+.includes(this.searchTerm) ||
+      String(payment.status)?.toLowerCase()
+.includes(this.searchTerm.toLowerCase())
     );
   }
 
@@ -536,7 +588,7 @@ export class ClientComponent implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    switch (status?.toLowerCase()) {
+    switch (String(status)?.toLowerCase()) {
       case 'completed': return 'status-completed';
       case 'pending': return 'status-pending';
       case 'failed': return 'status-failed';
@@ -558,17 +610,17 @@ export class ClientComponent implements OnInit {
     this.clientService.getSalaryDisbursement().subscribe({
       next:(res)=>{
         this.salaryDisbursements = res;
-        for(let i = 0;i<res.length;i++){
-          this.salaryDisbursementsDTO.push(
-            {
-              amount:this.salaryDisbursements[i].amount,
-              name:this.salaryDisbursements[i].employees.name,
-              createdAt:this.salaryDisbursements[i].createdAt.toDateString(),
-              salary:this.salaryDisbursements[i].employees.salary,
-              position:this.salaryDisbursements[i].employees.position,
-              department:this.salaryDisbursements[i].employees.department
-            });
-        }
+       for (let i = 0; i < res.length; i++) {
+  this.salaryDisbursementsDTO.push({
+    amount: this.salaryDisbursements[i].amount,
+    name: this.salaryDisbursements[i].employee?.name,
+    createdAt: new Date(this.salaryDisbursements[i].createdAt).toDateString(),
+    salary: this.salaryDisbursements[i].employee?.salary,
+    position: this.salaryDisbursements[i].employee?.position,
+    department: this.salaryDisbursements[i].employee?.department
+  });
+}
+
         doc.setFontSize(16);
         doc.text('User Data Report', 14, 15);
         const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
@@ -591,21 +643,22 @@ export class ClientComponent implements OnInit {
   }
 
   generatePaymentReport(){
+    alert("Sure want to download");
     const doc = new jsPDF();
     this.clientService.getSalaryDisbursement().subscribe({
       next:(res)=>{
         this.salaryDisbursements = res;
-        for(let i = 0;i<res.length;i++){
-          this.salaryDisbursementsDTO.push(
-            {
-              amount:this.salaryDisbursements[i].amount,
-              name:this.salaryDisbursements[i].employees.name,
-              createdAt:this.salaryDisbursements[i].createdAt.toDateString(),
-              salary:this.salaryDisbursements[i].employees.salary,
-              position:this.salaryDisbursements[i].employees.position,
-              department:this.salaryDisbursements[i].employees.department
-            });
-        }
+        for (let i = 0; i < res.length; i++) {
+  this.salaryDisbursementsDTO.push({
+    amount: this.salaryDisbursements[i].amount,
+    name: this.salaryDisbursements[i].employee?.name,
+    createdAt: new Date(this.salaryDisbursements[i].createdAt).toDateString(),
+    salary: this.salaryDisbursements[i].employee?.salary,
+    position: this.salaryDisbursements[i].employee?.position,
+    department: this.salaryDisbursements[i].employee?.department
+  });
+}
+
         doc.setFontSize(16);
         doc.text('User Data Report', 14, 15);
         const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
@@ -618,6 +671,7 @@ export class ClientComponent implements OnInit {
         }
 
         autoTable(doc, options);
+        alert("Download");
         doc.save('salary-report.pdf');
       },
       error:(error)=>{
@@ -629,10 +683,10 @@ export class ClientComponent implements OnInit {
 }
 
 interface SalaryDisbursementDTO{
-  name:string;
+  name?:string;
   amount:number;
   createdAt:string;
-  salary:number;
-  position:string;
-  department:string;
+  salary?:number;
+  position?:string;
+  department?:string;
 };

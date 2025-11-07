@@ -3,8 +3,8 @@
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a routerLink="/super-admin/dashboard">Home</a></li>
-      <li class="breadcrumb-item"><a routerLink="/super-admin/banks">Banks</a></li>
+      <li class="breadcrumb-item"><a routerLink="/admin/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/admin/banks">Banks</a></li>
       <li class="breadcrumb-item active">{{ bank?.name || 'Bank' }} Users</li>
     </ol>
   </nav>
@@ -105,12 +105,12 @@
               <td>{{ user.phoneNumber }}</td>
               <td>
                 <div class="btn-group" role="group">
-                  <button
+                  <!-- <button
                     class="btn btn-sm btn-outline-primary"
                     (click)="editBankUser(user)"
                     title="Edit">
                     <i class="bi bi-pencil"></i>
-                  </button>
+                  </button> -->
                   <button
                     class="btn btn-sm btn-outline-danger"
                     (click)="deleteBankUser(user)"

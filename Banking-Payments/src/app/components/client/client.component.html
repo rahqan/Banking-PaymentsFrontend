@@ -85,6 +85,8 @@
       <button class="btn-primary" (click)="openAddEmployeeModal()">
         + Add Employee
       </button>
+      <input type="file" (change)="onFileSelected($event)" accept=".csv" />
+      <button (click)="uploadCsv()">Upload CSV</button>
     </div>
     
     <div class="table-container">
@@ -111,7 +113,7 @@
             <td>
               <button class="btn-edit" (click)="openEditEmployeeModal(employee)">Edit</button>
               <button class="btn-delete" (click)="deleteEmployee(employee.employeeId)">Delete</button>
-              <button class="btn-add-salary"> Salary </button>
+              <button class="btn-add-salary" (click)="salaryDisburment(employee.employeeId)"> Salary </button>
             </td>
           </tr>
           <tr *ngIf="filteredEmployees.length === 0">
@@ -245,7 +247,7 @@
             <td>{{ payment.paymentDate | date:'dd/MM/yyyy' }}</td>
             <td>
               <span [class]="'status-badge ' + getStatusClass(payment.status)">
-                {{ payment.status }}
+                {{ payment.status == "0" ?"Pending":(payment.status == "1" ? "Appoved" : "Rejected") }}
               </span>
             </td>
             <td>{{ payment.remarks }}</td>
@@ -282,8 +284,8 @@
 
 
   <!-- Report Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'payments'">
-    
+  <div class="tab-content" *ngIf="activeTab === 'reports'">
+    <button (click)="generatePaymentReport()" > Salary Disbursment </button>
   </div>
   
   <!-- Employee Modal -->

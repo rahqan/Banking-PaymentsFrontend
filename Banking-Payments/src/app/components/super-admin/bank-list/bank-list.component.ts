@@ -34,7 +34,9 @@ toggleDropdown(event: Event) {
 }
 
   addBankUser(bank: any) {
-  this.router.navigate(['/admin/banks', bank.bankId, 'users', 'create']);
+    console.log(bank);
+    
+  this.router.navigate([`/admin/banks/${bank.bankId}/users/create`]);
 }
 
 
@@ -167,9 +169,9 @@ toggleDropdown(event: Event) {
     this.router.navigate(['/admin/banks', 'create']);
   }
 
-  generateReports(bank: BankDTO): void {
-    alert('Reports feature coming soon!');
-  }
+  // generateReports(bank: BankDTO): void {
+  //   alert('Reports feature coming soon!');
+  // }
 
   getStatusBadgeClass(isActive: boolean): string {
     return isActive ? 'badge bg-success' : 'badge bg-secondary';

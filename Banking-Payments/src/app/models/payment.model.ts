@@ -31,6 +31,8 @@ export interface Payment {
   bankUserId: number;
   beneficiary?: Beneficiary;
   client?: Client;
+  rejectionRemark?:string;
+  remarks:string;
 }
 
 export interface Beneficiary {

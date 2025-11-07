@@ -51,7 +51,7 @@ export class BankUsersComponent implements OnInit {
       error: (err) => {
         console.error('Error loading bank:', err);
         alert('Bank not found');
-        this.router.navigate(['/super-admin/banks']);
+        this.router.navigate(['/admin/banks']);
       }
     });
   }
@@ -117,11 +117,11 @@ export class BankUsersComponent implements OnInit {
   }
 
   addBankUser(): void {
-    this.router.navigate(['/super-admin/banks', this.bankId, 'users', 'create']);
+    this.router.navigate(['/admin/banks/:bankId/users/create', this.bankId, 'users', 'create']);
   }
 
   editBankUser(user: BankUserDTO): void {
-    this.router.navigate(['/super-admin/banks', this.bankId, 'users', 'edit', user.bankUserId]);
+    this.router.navigate(['/admin/banks', this.bankId, 'users', 'edit', user.bankUserId]);
   }
 
   deleteBankUser(user: BankUserDTO): void {
@@ -140,6 +140,6 @@ export class BankUsersComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/super-admin/banks']);
+    this.router.navigate(['/admin/banks']);
   }
 }

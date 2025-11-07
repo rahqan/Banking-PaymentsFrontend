@@ -127,6 +127,7 @@ createClient() {
     next: (response: any) => {
       this.loading = false;
       // Store the client ID for next steps
+      this.createdClientId=response.clientId;
       this.clientId = response.clientId;
       this.currentStep = 2;
     },

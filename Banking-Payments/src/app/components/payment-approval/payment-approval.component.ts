@@ -50,7 +50,9 @@ export class PaymentApprovalComponent implements OnInit {
   loadPayments(): void {
     this.loading = true;
     this.paymentService.getAllPaymentsByBank().subscribe({
+
       next: (payments) => {
+          
         console.log('Payments from API:', payments);
         this.payments = payments;
         this.calculateStats();

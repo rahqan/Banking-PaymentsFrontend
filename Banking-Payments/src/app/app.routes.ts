@@ -20,7 +20,7 @@ export const routes: Routes = [
     path: 'bank',
     loadComponent: () =>
       import('./components/layout/layout.component').then((m) => m.LayoutComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     children: [
       {
         path: 'dashboard',
@@ -63,7 +63,7 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: '',
+        path: '*',
         redirectTo: 'dashboard',
         pathMatch: 'full',
       }
@@ -80,7 +80,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [SuperAdminGuard],
+    // canActivate: [SuperAdminGuard],
     component: SuperAdminLayoutComponent,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
