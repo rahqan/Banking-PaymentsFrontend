@@ -14,6 +14,7 @@ export interface CreateBankUserDTO {
   password: string;
   phoneNumber: string;
   bankId: number;
+  
 }
 
 export interface UpdateBankUserDTO {

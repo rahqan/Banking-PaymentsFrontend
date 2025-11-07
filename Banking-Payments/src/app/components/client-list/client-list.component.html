@@ -85,7 +85,9 @@
                   {{ client.clientVerificationStatus }}
                 </span>
               </td>
-              <td>{{ client.createdAt | date:'short' }}</td>
+             <!-- <td>{{ client.VerifiedAt ? (client.VerifiedAt | date:'short') : '-' }}</td> -->
+              <!-- <td>{{ client.verifiedAt ? (client.verifiedAt | date:'short') : '-' }}</td> -->
+<td>{{ client.createdAt ? (client.createdAt | date:'dd/MM/yyyy, h:mm a') : '-' }}</td>
               <td>
                 <button class="btn btn-sm btn-outline-primary me-1" (click)="openActionModal(client)">
                   <i class="bi bi-gear"></i>

@@ -58,15 +58,20 @@ export const routes: Routes = [
           ),
       },
       {
-        path: '',
+        path: '*',
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      }
     ],
   },
   {
     path: '',
-    redirectTo: '/bank/dashboard',
+    redirectTo: '/login',
     pathMatch: 'full',
   },
   {

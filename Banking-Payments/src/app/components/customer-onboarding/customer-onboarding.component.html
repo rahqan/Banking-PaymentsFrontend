@@ -87,10 +87,12 @@
 
       <!-- Step 1: Basic Information -->
 <div *ngIf="currentStep === 1">
-  <h5 class="mb-4">Step 1: Basic Information</h5>
+  <h5 class="mb-4">Step 1: Client Information + Bank Details</h5>
 
-  <form #basicInfoForm="ngForm">
+  <form #basicInfoForm="ngForm" (ngSubmit)="createClient()">
     <div class="row g-3">
+
+      <!-- Existing fields -->
       <div class="col-md-6">
         <label for="clientName" class="form-label">Client Name *</label>
         <input type="text" class="form-control" id="clientName"
@@ -118,11 +120,61 @@
       <div class="col-12">
         <label for="address" class="form-label">Address *</label>
         <textarea class="form-control" id="address" rows="3"
-                  name="address" [(ngModel)]="clientData.clientAddress" required></textarea>
+                  name="clientAddress" [(ngModel)]="clientData.clientAddress" required></textarea>
       </div>
+
+      <!-- ✅ Bank details -->
+      <hr class="mt-4 mb-3">
+
+      <div class="col-md-6">
+        <label for="accountHolder" class="form-label">Account Holder *</label>
+        <input type="text" class="form-control" id="accountHolder"
+               name="accountHolder" [(ngModel)]="clientData.bankDetails.accountHolder" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="accountNumber" class="form-label">Account Number *</label>
+        <input type="text" class="form-control" id="accountNumber"
+               name="accountNumber" [(ngModel)]="clientData.bankDetails.accountNumber" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="bankName" class="form-label">Bank Name *</label>
+        <input type="text" class="form-control" id="bankName"
+               name="bankName" [(ngModel)]="clientData.bankDetails.bankName" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="branch" class="form-label">Branch *</label>
+        <input type="text" class="form-control" id="branch"
+               name="branch" [(ngModel)]="clientData.bankDetails.branch" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="ifscCode" class="form-label">IFSC Code *</label>
+        <input type="text" class="form-control" id="ifscCode"
+               name="ifscCode" [(ngModel)]="clientData.bankDetails.ifscCode" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="accountType" class="form-label">Account Type</label>
+        <input type="text" class="form-control" id="accountType"
+               name="accountType" [(ngModel)]="clientData.bankDetails.accountType">
+      </div>
+
+      <div class="col-md-6">
+        <label for="balance" class="form-label">Initial Balance</label>
+        <input type="number" class="form-control" id="balance"
+               name="balance" [(ngModel)]="clientData.bankDetails.balance">
+      </div>
+    </div>
+
+    <div class="mt-4 text-end">
+      <button class="btn btn-primary" type="submit" [disabled]="loading">Create Client</button>
     </div>
   </form>
 </div>
+
 
       <!-- Step 2: Document Upload -->
       <div *ngIf="currentStep === 2">
