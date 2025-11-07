@@ -6,9 +6,18 @@ export interface Client {
   clientEmail: string;
   clientBusinessType: string;
   clientVerificationStatus: string;
-  createdAt: string;
+  createdAt: Date;
 }
 
+export interface ClientBankDetails {
+  accountHolder: string;
+  accountNumber: string;
+  bankName: string;
+  balance: number;
+  ifscCode: string;
+  accountType?: string;
+  branch: string;
+}
 
 export interface ClientCreation {
   // clientCode: string;
@@ -19,6 +28,7 @@ export interface ClientCreation {
   clientAddress: string;
   // bankId: number;
   registerationNumber?: string;
+    bankDetails: ClientBankDetails;
 }
 
 export interface ClientVerificationRequest {

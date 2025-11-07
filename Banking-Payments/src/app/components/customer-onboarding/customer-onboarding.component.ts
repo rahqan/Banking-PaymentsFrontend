@@ -28,16 +28,35 @@ export class CustomerOnboardingComponent implements OnInit {
   ];
 
   // Step 1: Basic Info
-  clientData: ClientCreation = {
-    // clientCode: '',
-    clientName: '',
-    clientEmail: '',
-    clientPassword: '',
-    clientBusinessType: '',
-    clientAddress: '',
+  // clientData: ClientCreation = {
+  //   // clientCode: '',
+  //   clientName: '',
+  //   clientEmail: '',
+  //   clientPassword: '',
+  //   clientBusinessType: '',
+  //   clientAddress: '',
    
-    registerationNumber: ''
-  };
+  //   registerationNumber: ''
+  // };
+
+clientData: ClientCreation = {
+  clientName: '',
+  clientEmail: '',
+  clientPassword: '',
+  clientBusinessType: '',
+  clientAddress: '',
+  registerationNumber: '',
+  bankDetails: {
+    accountHolder: '',
+    accountNumber: '',
+    bankName: '',
+    balance: 0,
+    ifscCode: '',
+    accountType: 'Current Account',
+    branch: ''
+  }
+};
+
 
   // Step 2: Document Upload
   uploadedFiles: { file: File; docType: string; preview?: string }[] = [];

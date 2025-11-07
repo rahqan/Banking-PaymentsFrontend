@@ -410,6 +410,7 @@ export class ClientListComponent implements OnInit {
     this.loading = true;
     this.bankUserService.getAllClients().subscribe({
       next: (clients) => {
+        console.log(clients[1])
         this.clients = clients;
         this.applyFilters();
         this.loading = false;
