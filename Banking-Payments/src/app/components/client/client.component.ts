@@ -25,6 +25,8 @@ export class ClientComponent implements OnInit {
   searchTerm: string = '';
   // private clientId = localStorage.getItem("userId");
   clientId!:any;
+  reportFromDate: string = '';
+  reportToDate: string = '';
 
   // Modals
   showEmployeeModal: boolean = false;
@@ -610,19 +612,24 @@ uploadCsv(){
     this.clientService.getSalaryDisbursement().subscribe({
       next:(res)=>{
         this.salaryDisbursements = res;
-       for (let i = 0; i < res.length; i++) {
-  this.salaryDisbursementsDTO.push({
-    amount: this.salaryDisbursements[i].amount,
-    name: this.salaryDisbursements[i].employee?.name,
-    createdAt: new Date(this.salaryDisbursements[i].createdAt).toDateString(),
-    salary: this.salaryDisbursements[i].employee?.salary,
-    position: this.salaryDisbursements[i].employee?.position,
-    department: this.salaryDisbursements[i].employee?.department
-  });
-}
+        for (let i = 0; i < res.length; i++) {
+          this.salaryDisbursementsDTO.push({
+          amount: this.salaryDisbursements[i].amount,
+          name: this.salaryDisbursements[i].employee?.name,
+          createdAt: new Date(this.salaryDisbursements[i].createdAt).toDateString(),
+          salary: this.salaryDisbursements[i].employee?.salary,
+          position: this.salaryDisbursements[i].employee?.position,
+          department: this.salaryDisbursements[i].employee?.department
+          });
+        }
 
+        doc.setFontSize(20);
+        doc.text('Salary Disbursement Report', 14, 22);
+        console.log(this.reportFromDate + " & " + this.reportToDate);
         doc.setFontSize(16);
-        doc.text('User Data Report', 14, 15);
+        doc.text(`Period: ${this.reportFromDate} to ${this.reportToDate}`, 14, 32);
+
+        // doc.text('User Data Report', 14, 15);
         const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
         const options:UserOptions = {
           columns,
@@ -645,22 +652,28 @@ uploadCsv(){
   generatePaymentReport(){
     alert("Sure want to download");
     const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.setTextColor(0, 0, 0);
+    var temp = `Period :: ${this.reportFromDate.toString()} to ${this.reportToDate.toString()}`;
+    doc.text(temp, 14, 22);
+    console.log(this.reportFromDate + " & " + this.reportToDate);
+    doc.setFontSize(16);
+    doc.text(`Period: ${this.reportFromDate} to ${this.reportToDate}`, 14, 32);
     this.clientService.getSalaryDisbursement().subscribe({
       next:(res)=>{
         this.salaryDisbursements = res;
         for (let i = 0; i < res.length; i++) {
-  this.salaryDisbursementsDTO.push({
-    amount: this.salaryDisbursements[i].amount,
-    name: this.salaryDisbursements[i].employee?.name,
-    createdAt: new Date(this.salaryDisbursements[i].createdAt).toDateString(),
-    salary: this.salaryDisbursements[i].employee?.salary,
-    position: this.salaryDisbursements[i].employee?.position,
-    department: this.salaryDisbursements[i].employee?.department
-  });
-}
+          this.salaryDisbursementsDTO.push({
+          amount: this.salaryDisbursements[i].amount,
+          name: this.salaryDisbursements[i].employee?.name,
+          createdAt: new Date(this.salaryDisbursements[i].createdAt).toDateString(),
+          salary: this.salaryDisbursements[i].employee?.salary,
+          position: this.salaryDisbursements[i].employee?.position,
+          department: this.salaryDisbursements[i].employee?.department
+          });
+        }
 
-        doc.setFontSize(16);
-        doc.text('User Data Report', 14, 15);
+        
         const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
         const options:UserOptions = {
           columns,

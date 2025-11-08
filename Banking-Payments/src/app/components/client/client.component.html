@@ -1,7 +1,12 @@
 <div class="dashboard-container">
-  <header class="header">
-    <h1>Client Management Dashboard</h1>
-    <p>Manage your bank details, employees, and beneficiaries</p>
+  <header class="header" style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1>Client Management Dashboard</h1>
+      <p>Manage your bank details, employees, and beneficiaries</p>
+    </div>
+    <div>
+      <button style="padding: 5px 10px; border-radius: 10px; background-color: rgb(239, 67, 67); color: white;">Logout</button>
+    </div>
   </header>
   
   <div class="tabs">
@@ -285,7 +290,12 @@
 
   <!-- Report Tab -->
   <div class="tab-content" *ngIf="activeTab === 'reports'">
-    <button (click)="generatePaymentReport()" > Salary Disbursment </button>
+    <form>
+      <input type="date" [(ngModel)]="reportFromDate" class="date-control" name="Start date" placeholder="Start date" />
+      <span> TO </span>
+      <input type="date" [(ngModel)]="reportToDate" class="date-control" name="Start date" placeholder="Start date" />
+    </form>
+    <button (click)="generatePaymentReport()" style="margin: 10px; padding: 10px; border-radius: 10px; color: white; background-color: green;" > Salary Disbursment </button>
   </div>
   
   <!-- Employee Modal -->

@@ -49,7 +49,7 @@ clientData: ClientCreation = {
   bankDetails: {
     accountHolder: '',
     accountNumber: '',
-    bankName: '',
+    bankName: 'Global Bank',
     balance: 0,
     ifscCode: '',
     accountType: 'Current Account',
