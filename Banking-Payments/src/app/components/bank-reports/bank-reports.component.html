@@ -202,13 +202,13 @@
         </div>
       </div>
 
-      <!-- Additional Metrics -->
       <div class="row g-4 mb-4">
         <div class="col-md-6">
           <div class="card">
             <div class="card-body">
               <h6 class="text-muted">Average Onboarding Time</h6>
-              <h3 class="text-info">{{ onboardingReport.averageOnboardingDays }} days</h3>
+            <h3 class="text-info">{{ onboardingReport.averageOnboardingDays | number:'1.1-2' }} days</h3>
+
             </div>
           </div>
         </div>
@@ -228,7 +228,7 @@
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>Client ID</th>
+              <!-- <th>Client ID</th> -->
               <th>Code</th>
               <th>Name</th>
               <th>Email</th>
@@ -242,7 +242,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let client of onboardingReport.clientDetails">
-              <td>{{ client.clientId }}</td>
+              <!-- <td>{{ client.clientId }}</td> -->
               <td><span class="badge bg-secondary">{{ client.clientCode }}</span></td>
               <td>{{ client.clientName }}</td>
               <td>{{ client.email }}</td>
@@ -369,7 +369,7 @@
           <table class="table table-hover">
             <thead class="table-light">
               <tr>
-                <th>User ID</th>
+                <th>Bank User Code</th>
                 <th>Name</th>
                 <th>Total Approved</th>
                 <th>Total Rejected</th>
@@ -378,7 +378,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let user of paymentReport.bankUserPerformance">
-                <td>{{ user.bankUserId }}</td>
+                <td>{{ user.bankUserCode }}</td>
                 <td>{{ user.bankUserName }}</td>
                 <td><span class="badge bg-success">{{ user.totalApproved }}</span></td>
                 <td><span class="badge bg-danger">{{ user.totalRejected }}</span></td>
@@ -396,7 +396,7 @@
           <table class="table table-hover">
             <thead class="table-light">
               <tr>
-                <th>Payment ID</th>
+                <!-- <th>Payment ID</th> -->
                 <th>Client Name</th>
                 <th>Beneficiary</th>
                 <th>Amount</th>
@@ -406,7 +406,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let txn of paymentReport.highValueTransactions">
-                <td>{{ txn.paymentId }}</td>
+                <!-- <td>{{ txn.paymentId }}</td> -->
                 <td>{{ txn.clientName }}</td>
                 <td>{{ txn.beneficiaryName }}</td>
                 <td class="fw-bold text-primary">{{ formatCurrency(txn.amount) }}</td>
@@ -465,7 +465,7 @@
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>Client ID</th>
+              <!-- <th>Client ID</th> -->
               <th>Client Code</th>
               <th>Name</th>
               <th>Email</th>
@@ -482,7 +482,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let client of clientActivity">
-              <td>{{ client.clientId }}</td>
+              <!-- <td>{{ client.clientId }}</td> -->
               <td><span class="badge bg-secondary">{{ client.clientCode }}</span></td>
               <td>{{ client.clientName }}</td>
               <td>{{ client.email }}</td>

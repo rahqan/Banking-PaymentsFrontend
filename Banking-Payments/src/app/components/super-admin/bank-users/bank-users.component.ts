@@ -115,8 +115,8 @@ export class BankUsersComponent implements OnInit {
     }
   }
 
-  addBankUser(): void {
-    this.router.navigate(['/admin/banks/:bankId/users/create', this.bankId, 'users', 'create']);
+  addBankUser(bank:any): void {
+     this.router.navigate([`/admin/banks/${bank.bankId}/users/create`]);
   }
 
   editBankUser(user: BankUserDTO): void {

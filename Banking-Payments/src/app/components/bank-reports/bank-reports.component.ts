@@ -141,6 +141,10 @@ export class BankReportsComponent implements OnInit {
 
     this.reportService.getCustomerOnboardingReport(start, end).subscribe({
       next: (data) => {
+        // console.log(data);
+
+
+
         this.onboardingReport = data;
         this.loading = false;
       },
