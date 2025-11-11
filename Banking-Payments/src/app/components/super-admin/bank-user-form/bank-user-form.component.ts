@@ -1,4 +1,3 @@
-// src/app/components/super-admin/bank-user-form/bank-user-form.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router';

@@ -11,6 +11,8 @@ import { PaymentType, VerificationStatus } from '../../models/payment.model';
 import jsPDF from 'jspdf';
 import SalaryDisbursement from '../../models/SalaryDisbursement';
 import autoTable,{UserOptions} from 'jspdf-autotable';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-client',
@@ -23,12 +25,10 @@ import autoTable,{UserOptions} from 'jspdf-autotable';
 export class ClientComponent implements OnInit {
   activeTab: 'bank' | 'employees' | 'beneficiaries' | 'payments' | 'reports' = 'bank';
   searchTerm: string = '';
-  // private clientId = localStorage.getItem("userId");
   clientId!:any;
   reportFromDate: string = '';
   reportToDate: string = '';
 
-  // Modals
   showEmployeeModal: boolean = false;
   showBeneficiaryModal: boolean = false;
   showPaymentModal: boolean = false;
@@ -52,7 +52,6 @@ export class ClientComponent implements OnInit {
   payments: Payment[] = [];
   employees: Employee[] = [];
 
-  // Pagination
   employeePage: number = 1;
   employeePageSize: number = 5;
 
@@ -154,22 +153,21 @@ export class ClientComponent implements OnInit {
     return Array.from({ length: this.totalPaymentPages }, (_, i) => i + 1);
   }
 
-  // Form data
   currentEmployee: Employee = this.getEmptyEmployee();
   currentBeneficiary: Beneficiary = this.getEmptyBeneficiary();
   currentPayment: PaymentDTO = this.getEmptyPayment();
-  selectedBeneficiaryId: number = 0; // Separate variable for dropdown
+  selectedBeneficiaryId: number = 0;
 
-  constructor(private clientService: ClientService) {}
+  constructor(private clientService: ClientService, private authService: AuthService,
+    private router: Router) {}
   
 
   ngOnInit(): void {
     this.loadAllData();
     this.clientId = localStorage.getItem("userId");
   }
-
+  // Initial Loading
   loadAllData(): void {
-    // Load Bank Details
     this.clientService.getClientBankDetails().subscribe({
       next: (res) => {
         this.bankDetails = res;
@@ -180,7 +178,6 @@ export class ClientComponent implements OnInit {
       }
     });
 
-    // Load Beneficiaries
     this.clientService.getAllBeneficiary().subscribe({
       next: (res) => {
         this.beneficiaries = res;
@@ -191,7 +188,6 @@ export class ClientComponent implements OnInit {
       }
     });
 
-    // Load Employees
     this.clientService.getAllEmployee().subscribe({
       next: (res) => {
         this.employees = res.employees || res;
@@ -202,7 +198,6 @@ export class ClientComponent implements OnInit {
       }
     });
 
-    // Load Payments
     this.clientService.getAllPayments().subscribe({
       next: (res) => {  
         this.payments = res;
@@ -212,20 +207,16 @@ export class ClientComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading payments:', error);
-        // Initialize with empty array if API fails
         this.payments = [];
       }
     });
   }
 
-  // Tab Management
   setActiveTab(tab: 'bank' | 'employees' | 'beneficiaries' | 'payments' | 'reports') {
     this.activeTab = tab;
     this.searchTerm = '';
   }
 
-  // ==================== EMPLOYEE METHODS ====================
-  
   getEmptyEmployee(): Employee {
     return {
       employeeId: 0,
@@ -271,7 +262,6 @@ export class ClientComponent implements OnInit {
   }
 
   saveEmployee() {
-    // Validation
     if (!this.currentEmployee.name || !this.currentEmployee.email || 
         !this.currentEmployee.position || !this.currentEmployee.department || !this.currentEmployee.accountNumber
       || !this.currentEmployee.ifscCode || !this.currentEmployee.address) {
@@ -367,7 +357,7 @@ uploadCsv(){
               console.log(res);
             },
             error:(error)=>{
-              if (error.status === 409) { // HTTP 409 Conflict
+              if (error.status === 409) {
               alert("Salary cannot be disbursed more than once a month!");
             } else {
               alert("Something went wrong!");
@@ -384,8 +374,6 @@ uploadCsv(){
     this.showEmployeeModal = false;
     this.currentEmployee = this.getEmptyEmployee();
   }
-
-  // ==================== BENEFICIARY METHODS ====================
 
   getEmptyBeneficiary(): Beneficiary {
     return {
@@ -426,7 +414,6 @@ uploadCsv(){
   }
 
   saveBeneficiary() {
-    // Validation
     if (!this.currentBeneficiary.name || !this.currentBeneficiary.accountNumber ||
         !this.currentBeneficiary.ifscCode || !this.currentBeneficiary.bankName) {
       alert('Please fill all required fields');
@@ -451,7 +438,6 @@ uploadCsv(){
       //   }
       // });
     } else {
-      // Add Beneficiary - Call API
       this.currentBeneficiary.clientId = this.clientId;
       this.clientService.addBeneficiary(this.currentBeneficiary).subscribe({
         next: (res) => {
@@ -490,8 +476,6 @@ uploadCsv(){
     this.currentBeneficiary = this.getEmptyBeneficiary();
   }
 
-  // ==================== PAYMENT METHODS ====================
-
   getEmptyPayment(): PaymentDTO {
     var temp = new Date();
     return {
@@ -511,12 +495,9 @@ uploadCsv(){
     if (!this.searchTerm) return this.payments;
 
     return this.payments.filter(payment =>
-     String(payment.status)?.toLowerCase()
-.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      String(payment.status)?.toLowerCase()
-.includes(this.searchTerm) ||
-      String(payment.status)?.toLowerCase()
-.includes(this.searchTerm.toLowerCase())
+      String(payment.status)?.toLowerCase().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      String(payment.status)?.toLowerCase().includes(this.searchTerm) ||
+      String(payment.status)?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 
@@ -525,7 +506,6 @@ uploadCsv(){
     this.currentPayment = this.getEmptyPayment();
     this.selectedBeneficiaryId = 0;
     
-    // Set current date
     const today = new Date();
     this.currentPayment.paymentDate = today;
     
@@ -534,7 +514,6 @@ uploadCsv(){
   }
 
   makePayment() {
-    // Validation
     if (this.selectedBeneficiaryId === 0) {
       alert('Please select a beneficiary');
       return;
@@ -552,7 +531,6 @@ uploadCsv(){
       return;
     }
 
-    // Find beneficiary details
     const beneficiary = this.beneficiaries.find(b => b.beneficiaryId == this.selectedBeneficiaryId);
     if (!beneficiary) {
       alert('Beneficiary not found');
@@ -563,12 +541,10 @@ uploadCsv(){
 
     this.currentPayment.beneficiaryId = this.selectedBeneficiaryId;
     this.currentPayment.clientId = this.clientId;
-    // Call API to make payment
     this.clientService.addPayment(this.currentPayment).subscribe({
       next: (res) => {
         console.log('Payment successful:', res);
         
-        // Update local balance
         this.bankDetails.balance -= this.currentPayment.amount;
         
         alert('Payment successful!');
@@ -629,7 +605,6 @@ uploadCsv(){
         doc.setFontSize(16);
         doc.text(`Period: ${this.reportFromDate} to ${this.reportToDate}`, 14, 32);
 
-        // doc.text('User Data Report', 14, 15);
         const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
         const options:UserOptions = {
           columns,
@@ -651,6 +626,7 @@ uploadCsv(){
 
   generatePaymentReport(){
     alert("Sure want to download");
+    window.location.reload();
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.setTextColor(0, 0, 0);
@@ -692,6 +668,13 @@ uploadCsv(){
         
       }
     });
+  }
+
+  logout(): void {
+    if (confirm('Are you sure you want to logout?')) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    }
   }
 }
 

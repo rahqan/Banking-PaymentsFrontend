@@ -1,4 +1,3 @@
-// src/app/components/super-admin/layout/super-admin-layout.component.ts
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -13,7 +12,6 @@ import { CommonModule } from '@angular/common';
 })
 export class SuperAdminLayoutComponent {
   sidebarCollapsed = false;
-  
 
   constructor(
     private authService: AuthService,
@@ -35,5 +33,3 @@ export class SuperAdminLayoutComponent {
     return this.router.url.includes(route);
   }
 }
-
-// src/app/components/super-admin/layout/super-admin-layout.component.html

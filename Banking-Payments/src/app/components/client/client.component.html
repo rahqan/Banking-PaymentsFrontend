@@ -5,7 +5,7 @@
       <p>Manage your bank details, employees, and beneficiaries</p>
     </div>
     <div>
-      <button style="padding: 5px 10px; border-radius: 10px; background-color: rgb(239, 67, 67); color: white;">Logout</button>
+      <button style="padding: 5px 10px; border-radius: 10px; background-color: rgb(239, 67, 67); color: white;" (click)="logout()">Logout</button>
     </div>
   </header>
   
@@ -127,7 +127,7 @@
         </tbody>
       </table>
     </div>
-
+    <!-- Employee Pagination -->
     <div class="pagination" *ngIf="filteredEmployees.length > 0">
       <div class="pagination-info">
         Showing {{ (employeePage - 1) * employeePageSize + 1 }} to 
@@ -195,6 +195,7 @@
         </tbody>
       </table>
     </div>
+    <!-- Beneficiary Pagination -->
     <div class="pagination" *ngIf="filteredEmployees.length > 0">
       <div class="pagination-info">
         Showing {{ (beneficiaryPage - 1) * beneficiaryPageSize + 1 }} to 
@@ -263,6 +264,7 @@
         </tbody>
       </table>
     </div>
+    <!-- Payment Pagination -->
     <div class="pagination" *ngIf="filteredEmployees.length > 0">
       <div class="pagination-info">
         Showing {{ (paymentPage - 1) * paymentPageSize + 1 }} to 

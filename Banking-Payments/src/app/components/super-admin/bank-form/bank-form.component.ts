@@ -1,4 +1,3 @@
-// src/app/components/super-admin/bank-form/bank-form.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
@@ -51,7 +50,6 @@ export class BankFormComponent implements OnInit {
       isActive: [true]
     });
 
-    // Disable code field in edit mode
     if (this.isEditMode) {
       this.bankForm.get('code')?.disable();
     }

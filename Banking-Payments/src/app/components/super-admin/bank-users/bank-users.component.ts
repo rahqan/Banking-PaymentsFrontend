@@ -1,4 +1,3 @@
-// src/app/components/super-admin/bank-users/bank-users.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { BankService } from '../../../services/bank.service';

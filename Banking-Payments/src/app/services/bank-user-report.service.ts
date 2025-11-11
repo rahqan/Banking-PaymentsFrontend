@@ -1,5 +1,3 @@
-// src/app/services/bank-user-report.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -19,8 +17,6 @@ export class BankUserReportService {
   private apiUrl = `${environment.apiUrl}/BankUserReport`;
 
   constructor(private http: HttpClient) {}
-
-  // ==================== Report Data Endpoints ====================
 
   getTransactionReportByClient(
     clientId: number,
@@ -106,8 +102,6 @@ export class BankUserReportService {
     return this.http.get<DashboardStatsDTO>(`${this.apiUrl}/dashboard-stats`);
   }
 
-  // ==================== PDF Download Endpoints ====================
-
   downloadClientTransactionsPdf(
     clientId: number,
     startDate?: Date,
@@ -182,11 +176,6 @@ export class BankUserReportService {
     });
   }
 
-  // ==================== Helper Methods ====================
-
-  /**
-   * Download blob as file
-   */
   downloadFile(blob: Blob, filename: string): void {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -196,9 +185,6 @@ export class BankUserReportService {
     window.URL.revokeObjectURL(url);
   }
 
-  /**
-   * Format currency for display
-   */
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -207,9 +193,6 @@ export class BankUserReportService {
     }).format(amount);
   }
 
-  /**
-   * Format date for display
-   */
   formatDate(date: Date | string): string {
     return new Date(date).toLocaleDateString('en-IN', {
       year: 'numeric',

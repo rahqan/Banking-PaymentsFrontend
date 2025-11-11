@@ -1,4 +1,3 @@
-// src/app/components/super-admin/reports/reports.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -58,7 +57,6 @@ export class AdminReportsComponent implements OnInit {
     this.error = null;
   }
 
-  // ==================== System Overview ====================
   loadSystemOverview(): void {
     this.loading = true;
     this.error = null;
@@ -88,12 +86,10 @@ export class AdminReportsComponent implements OnInit {
     });
   }
 
-  // ==================== Bank Performance ====================
  loadBankPerformance(): void {
   this.loading = true;
   this.reportService.getBankPerformance(new Date(this.startDate),new Date( this.endDate)).subscribe({
     next: (data: BankPerformanceReportDTO[]) => {
-      // Compute average value safely
       this.bankPerformance = data.map(bank => ({
         ...bank,
         averagePaymentValue:
@@ -127,52 +123,7 @@ export class AdminReportsComponent implements OnInit {
     });
   }
 
-  // ==================== Transaction Volume ====================
-  // loadTransactionVolume(): void {
-  //   if (!this.startDate || !this.endDate) {
-  //     this.error = 'Please select both start and end dates';
-  //     return;
-  //   }
-
-  //   this.loading = true;
-  //   this.error = null;
-
-  //   const start = new Date(this.startDate);
-  //   const end = new Date(this.endDate);
-
-  //   this.reportService.getTransactionVolume(start, end).subscribe({
-  //     next: (data) => {
-  //       this.transactionVolume = data;
-  //       this.loading = false;
-  //     },
-  //     error: (err) => {
-  //       this.error = 'Failed to load transaction volume';
-  //       this.loading = false;
-  //       console.error(err);
-  //     }
-  //   });
-  // }
-
-  // downloadTransactionVolumePdf(): void {
-  //   if (!this.startDate || !this.endDate) {
-  //     this.error = 'Please select both start and end dates';
-  //     return;
-  //   }
-
-  //   const start = new Date(this.startDate);
-  //   const end = new Date(this.endDate);
-
-  //   this.reportService.downloadTransactionVolumePdf(start, end).subscribe({
-  //     next: (blob) => {
-  //       this.reportService.downloadFile(blob, `TransactionVolume_${Date.now()}.pdf`);
-  //     },
-  //     error: (err) => {
-  //       this.error = 'Failed to download PDF';
-  //       console.error(err);
-  //     }
-  //   });
-  // }
-loadTransactionVolume(): void {
+  loadTransactionVolume(): void {
     if (!this.startDate || !this.endDate) {
       alert('Please select both start and end dates');
       return;
@@ -200,12 +151,6 @@ loadTransactionVolume(): void {
     return this.transactionVolume.totalPaymentAmount / this.transactionVolume.totalPayments;
   }
 
-  // formatCurrency(amount: number): string {
-  //   return '₹' + amount.toLocaleString('en-IN', {
-  //     minimumFractionDigits: 2,
-  //     maximumFractionDigits: 2
-  //   });
-  // }
 
   formatDateForInput(date: Date): string {
     return date.toISOString().split('T')[0];
@@ -237,7 +182,6 @@ loadTransactionVolume(): void {
       });
     }
 
-  // ==================== Financial Summary ====================
   loadFinancialSummary(): void {
     if (!this.startDate || !this.endDate) {
       this.error = 'Please select both start and end dates';
@@ -283,7 +227,6 @@ loadTransactionVolume(): void {
     });
   }
 
-  // Helper methods
   formatCurrency(amount: number): string {
     return this.reportService.formatCurrency(amount);
   }

@@ -1,7 +1,3 @@
-// src/app/models/report.models.ts
-
-// ==================== Super Admin Report DTOs ====================
-
 export interface SystemOverviewReportDTO {
   totalBanks: number;
   activeBanks: number;
@@ -107,14 +103,12 @@ export interface MonthlyFinancialTrend {
   totalSalaries: number;
 }
 
-// ==================== Bank User Report DTOs ====================
-// src/app/models/report.model.ts
-
+// Bank User Report DTOs
 export interface TransactionReportDTO {
   paymentId: number;
   paymentType: string;
   amount: number;
-  paymentDate: string; // or Date, but API returns string
+  paymentDate: string;
   status: string;
   clientName: string;
   beneficiaryName: string;
@@ -202,8 +196,7 @@ export interface ClientActivityReportDTO {
   currentBalance: number;
 }
 
-// ==================== Common Interfaces ====================
-
+//  Common Interfaces
 export interface QuickStatsDTO {
   totalBanks: number;
   totalClients: number;

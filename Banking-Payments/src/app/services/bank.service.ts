@@ -1,4 +1,3 @@
-// src/app/services/bank.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -17,10 +16,10 @@ export class BankService {
   getAllBanks(): Observable<BankDTO[]> {
     return this.http.get<BankDTO[]>(this.apiUrl);
   }
-  // In bank.service.ts
-getBankUsersByBankId(bankId: number): Observable<BankUserDTO[]> {
-  return this.http.get<BankUserDTO[]>(`${this.apiUrl}/banks/${bankId}/users`);
-}
+
+  getBankUsersByBankId(bankId: number): Observable<BankUserDTO[]> {
+    return this.http.get<BankUserDTO[]>(`${this.apiUrl}/banks/${bankId}/users`);
+  }
 
 
   getAllBanksWithClientCount(): Observable<any[]> {
@@ -43,7 +42,6 @@ getBankUsersByBankId(bankId: number): Observable<BankUserDTO[]> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
   }
 
-  // Get all bank users for a specific bank
   getAllBankUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/bankUsers`);
   }

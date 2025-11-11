@@ -66,62 +66,19 @@ export class PaymentApprovalComponent implements OnInit {
     });
   }
 
-  // calculateStats(): void {
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0);
+  calculateStats(): void {
+    this.pendingCount = this.payments.filter(
+      p => p.status === VerificationStatus.Pending
+    ).length;
 
-  //   this.pendingCount = this.payments.filter(
-  //     p => p.status === VerificationStatus.Pending
-  //   ).length;
+    this.approvedTodayCount = this.payments.filter(
+      p => p.status === VerificationStatus.Verified
+    ).length;
 
-  //   this.approvedTodayCount = this.payments.filter(p => {
-  //     const paymentDate = new Date(p.paymentDate);
-  //     return p.status === VerificationStatus.Verified && paymentDate >= today;
-  //   }).length;
-
-  //   this.rejectedTodayCount = this.payments.filter(p => {
-  //     const paymentDate = new Date(p.paymentDate);
-  //     return p.status === VerificationStatus.Rejected && paymentDate >= today;
-  //   }).length;
-  // }
-
-
-calculateStats(): void {
-  this.pendingCount = this.payments.filter(
-    p => p.status === VerificationStatus.Pending
-  ).length;
-
-  this.approvedTodayCount = this.payments.filter(
-    p => p.status === VerificationStatus.Verified
-  ).length;
-
-  this.rejectedTodayCount = this.payments.filter(
-    p => p.status === VerificationStatus.Rejected
-  ).length;
-}
-
-
-
-
-
-
-  // applyFilters(): void {
-  //   this.filteredPayments = this.payments.filter(payment => {
-  //     // Status filter
-  //     const matchesStatus = this.statusFilter === 'All' ||
-  //       VerificationStatus[payment.status] === this.statusFilter;
-
-  //     // Amount filter
-  //     const matchesAmount = payment.amount >= this.minAmount &&
-  //       payment.amount <= this.maxAmount;
-
-  //     // Date filter
-  //     const matchesDate = this.matchesDateFilter(payment.paymentDate);
-
-  //     return matchesStatus && matchesAmount && matchesDate;
-  //   });
-  // }
-
+    this.rejectedTodayCount = this.payments.filter(
+      p => p.status === VerificationStatus.Rejected
+    ).length;
+  }
 
   applyFilters(): void {
   this.filteredPayments = this.payments.filter(payment => {

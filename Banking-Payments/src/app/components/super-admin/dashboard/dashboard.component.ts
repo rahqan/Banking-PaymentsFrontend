@@ -1,4 +1,3 @@
-// src/app/components/super-admin/dashboard/dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { DashboardService } from '../../../services/dashboard.service';
 import { BankDistribution, DashboardStats, RecentActivity } from '../../../models/dashboard.model';
@@ -18,7 +17,6 @@ export class DashboardComponent implements OnInit {
     totalBanks: 0,
     activeBanks: 0,
     activeBankUsers: 0,
-    // reportsGenerated: 0
   };
 
   bankDistribution: BankDistribution[] = [];

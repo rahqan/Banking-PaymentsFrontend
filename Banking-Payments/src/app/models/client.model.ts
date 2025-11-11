@@ -20,15 +20,13 @@ export interface ClientBankDetails {
 }
 
 export interface ClientCreation {
-  // clientCode: string;
   clientName: string;
   clientEmail: string;
   clientPassword: string;
   clientBusinessType: string;
   clientAddress: string;
-  // bankId: number;
   registerationNumber?: string;
-    bankDetails: ClientBankDetails;
+  bankDetails: ClientBankDetails;
 }
 
 export interface ClientVerificationRequest {

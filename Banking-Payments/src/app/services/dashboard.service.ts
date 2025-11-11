@@ -17,17 +17,13 @@ export class DashboardService {
     return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
   }
 
-  // getBankDistribution(): Observable<BankDistribution[]> {
-  //   return this.http.get<BankDistribution[]>(`${this.apiUrl}/bank-distribution`);
-  // }
-
-getBankDistribution(): Observable<any> {
-  const fullUrl = `${this.apiUrl}/bank-distribution`;
-  console.log('🌐 Making request to:', fullUrl);
-  console.log('🔐 Token:', localStorage.getItem('token') ? 'EXISTS' : 'MISSING');
+  getBankDistribution(): Observable<any> {
+    const fullUrl = `${this.apiUrl}/bank-distribution`;
+    console.log('🌐 Making request to:', fullUrl);
+    console.log('🔐 Token:', localStorage.getItem('token') ? 'EXISTS' : 'MISSING');
   
-  return this.http.get<any>(fullUrl);
-}
+    return this.http.get<any>(fullUrl);
+  }
 
   getRecentActivities(limit: number = 10): Observable<RecentActivity[]> {
     return this.http.get<RecentActivity[]>(`${this.apiUrl}/recent-activities?limit=${limit}`);

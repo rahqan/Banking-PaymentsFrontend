@@ -61,7 +61,7 @@ export class BankDashboardComponent implements OnInit {
     // Load pending payments
     this.paymentService.getPendingPayments().subscribe({
       next: (payments) => {
-        this.pendingPayments = payments.slice(0, 5); // Top 5 for dashboard
+        this.pendingPayments = payments.slice(0, 5);
         this.stats.paymentApprovals = payments.length;
         this.loading = false;
       },

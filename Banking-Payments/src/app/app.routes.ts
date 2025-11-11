@@ -9,6 +9,7 @@ import { BankFormComponent } from './components/super-admin/bank-form/bank-form.
 import { BankUsersComponent } from './components/super-admin/bank-users/bank-users.component';
 import { BankUserFormComponent } from './components/super-admin/bank-user-form/bank-user-form.component';
 import { ClientComponent } from './components/client/client.component';
+import { clientGuard } from './guards/client.guard';
 
 export const routes: Routes = [
   {
@@ -20,7 +21,7 @@ export const routes: Routes = [
     path: 'bank',
     loadComponent: () =>
       import('./components/layout/layout.component').then((m) => m.LayoutComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'dashboard',
@@ -76,11 +77,12 @@ export const routes: Routes = [
   },
   {
     path: 'client/dashboard',
-    component: ClientComponent
+    component: ClientComponent,
+    canActivate: [clientGuard]
   },
   {
     path: 'admin',
-    // canActivate: [SuperAdminGuard],
+    canActivate: [SuperAdminGuard],
     component: SuperAdminLayoutComponent,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

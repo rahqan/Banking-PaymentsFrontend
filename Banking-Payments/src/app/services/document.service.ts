@@ -20,48 +20,21 @@ export class DocumentService {
       // 'Authorization': `Bearer ${token}`
       'Authorization': `Bearer ${this.authService.getToken()}`
     });
+   }
+  uploadDocument(file: File, clientId: number, docType?: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('clientId', clientId.toString());
+    if (docType) formData.append('docType', docType);
+
+    const token = this.authService.getToken();
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+
+    console.log('Uploading:', { file, clientId, docType });
+    console.log('File type:', file?.type, 'size:', file?.size);
+
+    return this.http.post(`${this.apiUrl}/upload`, formData, { headers });
   }
-
-  // uploadDocument(file: File, clientId: number, docType?: string): Observable<any> {
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   formData.append('clientId', clientId.toString());
-  //   if (docType) {
-  //     formData.append('docType', docType);
-  //   }
-
-  //   return this.http.post(`${this.apiUrl}/upload`, formData, {
-  //     headers: this.getHeaders()
-  //   });
-  // }
-
-
-// uploadDocument(file: File, clientId: number, docType?: string): Observable<any> {
-//   const formData = new FormData();
-//   formData.append('file', file);
-//   formData.append('clientId', clientId.toString());
-//   if (docType) formData.append('docType', docType);
-
-//   const token = this.authService.getToken();
-//   const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
-// console.log(clientId);
-//   return this.http.post(`${this.apiUrl}/upload`, formData, { headers });
-// }
-
-uploadDocument(file: File, clientId: number, docType?: string): Observable<any> {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('clientId', clientId.toString());
-  if (docType) formData.append('docType', docType);
-
-  const token = this.authService.getToken();
-  const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
-
-  console.log('Uploading:', { file, clientId, docType }); // ✅ Add this
-  console.log('File type:', file?.type, 'size:', file?.size); // ✅ Check file object
-
-  return this.http.post(`${this.apiUrl}/upload`, formData, { headers });
-}
 
 
   getDocumentById(documentId: number): Observable<{ data: Document }> {

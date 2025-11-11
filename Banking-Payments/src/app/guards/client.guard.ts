@@ -1,25 +1,25 @@
-// src/app/guards/super-admin.guard.ts
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SuperAdminGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
 
+export class clientGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+  
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.authService.isAuthenticated() && this.isSuperAdmin()) {
+    if (this.authService.isAuthenticated() && this.isClient()) {
       return true;
     }
-
+  
     this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
     return false;
   }
 
-  private isSuperAdmin(): boolean {
+  private isClient(): boolean {
     const role = localStorage.getItem('role');
-    return role === '1';
+    return role === '3';
   }
-}
+};

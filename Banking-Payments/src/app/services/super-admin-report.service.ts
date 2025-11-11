@@ -1,5 +1,3 @@
-// src/app/services/super-admin-report.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -20,7 +18,7 @@ export class SuperAdminReportService {
 
   constructor(private http: HttpClient) {}
 
-  // ==================== Report Data Endpoints ====================
+  // Report Data Endpoints
 
   getSystemOverview(): Observable<SystemOverviewReportDTO> {
     return this.http.get<SystemOverviewReportDTO>(`${this.apiUrl}/system-overview`);
@@ -54,8 +52,6 @@ export class SuperAdminReportService {
   getQuickStats(): Observable<QuickStatsDTO> {
     return this.http.get<QuickStatsDTO>(`${this.apiUrl}/quick-stats`);
   }
-
-  // ==================== PDF Download Endpoints ====================
 
   downloadSystemOverviewPdf(): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/system-overview/pdf`, {
@@ -97,11 +93,6 @@ export class SuperAdminReportService {
     });
   }
 
-  // ==================== Helper Methods ====================
-
-  /**
-   * Download blob as file
-   */
   downloadFile(blob: Blob, filename: string): void {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -111,9 +102,6 @@ export class SuperAdminReportService {
     window.URL.revokeObjectURL(url);
   }
 
-  /**
-   * Format currency for display
-   */
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -122,9 +110,6 @@ export class SuperAdminReportService {
     }).format(amount);
   }
 
-  /**
-   * Format date for display
-   */
   formatDate(date: Date | string): string {
     return new Date(date).toLocaleDateString('en-IN', {
       year: 'numeric',

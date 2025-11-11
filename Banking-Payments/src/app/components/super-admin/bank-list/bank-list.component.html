@@ -1,4 +1,3 @@
-<!-- src/app/components/super-admin/bank-list/bank-list.component.html -->
 <div class="container-fluid py-4">
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
@@ -99,7 +98,6 @@
                 </span>
               </td>
               <td>
-                <!-- <span class="badge bg-info">{{ bank.clientCount || 0 }}</span> -->
               </td>
               <td>{{ bank.contactEmail || 'N/A' }}</td>
               <td>{{ bank.contactPhone || 'N/A' }}</td>
@@ -130,16 +128,11 @@
                       </a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
-                    <!-- <li>
-                      <a class="dropdown-item text-muted" (click)="generateReports(bank)">
-                        <i class="bi bi-file-earmark-bar-graph"></i> Reports (Coming Soon)
-                      </a>
-                    </li> -->
                     <li>
-  <a class="dropdown-item" (click)="addBankUser(bank)">
-    <i class="bi bi-person-plus"></i> Add Bank User
-  </a>
-</li>
+                      <a class="dropdown-item" (click)="addBankUser(bank)">
+                        <i class="bi bi-person-plus"></i> Add Bank User
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </td>

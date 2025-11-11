@@ -12,14 +12,6 @@ export enum VerificationStatus {
   Rejected = -1
 }
 
-
-// export enum VerificationStatus {
-//   Pending = 0,
-//   Verified = 1,
-//   Rejected = 2
-// }
-
-
 export interface Payment {
   paymentId: number;
   amount: number;

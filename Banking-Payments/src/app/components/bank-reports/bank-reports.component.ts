@@ -1,4 +1,3 @@
-// src/app/components/bank-reports/bank-reports.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -53,7 +52,6 @@ export class BankReportsComponent implements OnInit {
     this.error = null;
   }
 
-  // ==================== Transactions Report ====================
   loadAllTransactions(): void {
     this.loading = true;
     this.error = null;
@@ -134,9 +132,6 @@ export class BankReportsComponent implements OnInit {
     });
   }
 
-
-
-  // ==================== Customer Onboarding Report ====================
   loadOnboardingReport(): void {
     this.loading = true;
     this.error = null;
@@ -172,7 +167,6 @@ export class BankReportsComponent implements OnInit {
     });
   }
 
-  // ==================== Payment Approval Report ====================
   loadPaymentReport(): void {
     this.loading = true;
     this.error = null;
@@ -207,7 +201,6 @@ export class BankReportsComponent implements OnInit {
     });
   }
 
-  // ==================== Client Activity Report ====================
   loadClientActivity(): void {
     this.loading = true;
     this.error = null;
@@ -243,7 +236,6 @@ export class BankReportsComponent implements OnInit {
     });
   }
 
-  // Helper methods
   formatCurrency(amount: number): string {
     return this.reportService.formatCurrency(amount);
   }
@@ -256,57 +248,25 @@ export class BankReportsComponent implements OnInit {
     return this.transactions.reduce((sum, tx) => sum + tx.amount, 0);
   }
 
-  // getHighValuePendingCount(): number {
-  //   if (!this.paymentReport) return 0;
-  //   return this.paymentReport.highValueTransactions.filter(t => t.status === 'Pending').length;
-  // }
+  getTotalPaymentValue(): number {
+    return this.clientActivity.reduce((sum, c) => sum + c.totalPaymentValue, 0);
+  }
 
-  // getActiveClientsCount(): number {
-  //   return this.clientActivity.filter(c => c.is === 'Verified').length;
-  // }
+  getTotalSalaryValue(): number {
+    return this.clientActivity.reduce((sum, c) => sum + c.totalSalaryValue, 0);
+  }
 
-  // Add these helper methods to your BankReportsComponent class
+  getTotalCurrentBalance(): number {
+    return this.clientActivity.reduce((sum, c) => sum + c.currentBalance, 0);
+  }
 
-// getActiveClientsCount(): number {
-//   return this.clientActivity.filter(c => c.isActive).length;
-// }
+  getActiveClientsCount(): number {
+    return this.clientActivity.filter(c => c.isActive).length;
+  }
 
-getTotalPaymentValue(): number {
-  return this.clientActivity.reduce((sum, c) => sum + c.totalPaymentValue, 0);
-}
-
-getTotalSalaryValue(): number {
-  return this.clientActivity.reduce((sum, c) => sum + c.totalSalaryValue, 0);
-}
-
-getTotalCurrentBalance(): number {
-  return this.clientActivity.reduce((sum, c) => sum + c.currentBalance, 0);
-}
-
-
-// Add these helper methods to your BankReportsComponent class
-
-getActiveClientsCount(): number {
-  return this.clientActivity.filter(c => c.isActive).length;
-}
-
-// getTotalPaymentValue(): number {
-//   return this.clientActivity.reduce((sum, c) => sum + c.totalPaymentValue, 0);
-// }
-
-// getTotalSalaryValue(): number {
-//   return this.clientActivity.reduce((sum, c) => sum + c.totalSalaryValue, 0);
-// }
-
-// getTotalCurrentBalance(): number {
-//   return this.clientActivity.reduce((sum, c) => sum + c.currentBalance, 0);
-// }
-
-// Updated helper for Payment Approval Report
-getHighValuePendingCount(): number {
-  if (!this.paymentReport) return 0;
-  return this.paymentReport.highValueTransactions.filter(t => t.status === 'Pending').length;
-}
-
+  getHighValuePendingCount(): number {
+    if (!this.paymentReport) return 0;
+    return this.paymentReport.highValueTransactions.filter(t => t.status === 'Pending').length;
+  }
 
 }

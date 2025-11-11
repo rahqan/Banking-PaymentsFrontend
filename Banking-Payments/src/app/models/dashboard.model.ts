@@ -2,7 +2,6 @@ export interface DashboardStats {
   totalBanks: number;
   activeBanks: number;
   activeBankUsers: number;
-  // reportsGenerated: number;
 }
 
 export interface BankDistribution {

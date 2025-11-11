@@ -1,11 +1,8 @@
-/* src/app/components/super-admin/layout/super-admin-layout.component.css */
-
 .wrapper {
   display: flex;
   min-height: 100vh;
 }
 
-/* Sidebar */
 .sidebar {
   width: 250px;
   transition: width 0.3s ease;
@@ -55,7 +52,6 @@
   cursor: not-allowed;
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   margin-left: 250px;
@@ -69,7 +65,6 @@
   margin-left: 70px;
 }
 
-/* Header */
 .header {
   position: sticky;
   top: 0;
@@ -77,19 +72,16 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Content */
 .content {
   flex: 1;
   padding: 0;
   background-color: #f8f9fa;
 }
 
-/* Footer */
 .footer {
   margin-top: auto;
 }
 
-/* Stats Cards */
 .stats-card {
   border: none;
   border-radius: 0.5rem;
@@ -112,7 +104,6 @@
   font-weight: bold;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .sidebar {
     width: 70px;

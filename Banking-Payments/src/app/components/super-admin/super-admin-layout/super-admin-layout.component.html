@@ -44,9 +44,7 @@
     <!-- Logout section -->
     <div class="p-3 border-top mt-auto">
       <div class="d-flex align-items-center mb-2" *ngIf="!sidebarCollapsed">
-        <!-- <i class="bi bi-person-circle fs-4 me-2 text-white"></i> -->
         <div class="flex-grow-1">
-          <!-- <div class="small text-white">{{ userName }}</div> -->
         </div>
       </div>
       <button class="btn btn-outline-light btn-sm w-100" (click)="logout()">
@@ -64,24 +62,6 @@
         <button class="btn btn-link text-dark" (click)="toggleSidebar()">
           <i class="bi bi-list fs-4"></i>
         </button>
-
-        <!-- <div class="d-flex align-items-center gap-3">
-          <div class="dropdown">
-            <button
-              class="btn btn-link text-dark dropdown-toggle"
-              type="button"
-              id="userDropdown"
-              data-bs-toggle="dropdown">
-              <i class="bi bi-person-circle fs-4"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item disabled" href="#">Profile</a></li>
-              <li><a class="dropdown-item disabled" href="#">Settings</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
-            </ul>
-          </div>
-        </div> -->
       </div>
     </header>
 

@@ -1,4 +1,3 @@
-// src/app/components/super-admin/bank-list/bank-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { BankService } from '../../../services/bank.service';
@@ -42,8 +41,8 @@ toggleDropdown(event: Event) {
 
   // Filters
   searchTerm = '';
-  statusFilter = 'all'; // 'all', 'active', 'inactive'
-  clientCountFilter = 'all'; // 'all', 'low', 'medium', 'high'
+  statusFilter = 'all';
+  clientCountFilter = 'all';
 
   // Pagination
   currentPage = 1;
@@ -94,15 +93,6 @@ toggleDropdown(event: Event) {
       filtered = filtered.filter(bank => !bank.isActive);
     }
 
-    // // Client count filter
-    // if (this.clientCountFilter === 'low') {
-    //   filtered = filtered.filter(bank => (bank.clientCount || 0) >= 0 && (bank.clientCount || 0) <= 50);
-    // } else if (this.clientCountFilter === 'medium') {
-    //   filtered = filtered.filter(bank => (bank.clientCount || 0) > 50 && (bank.clientCount || 0) <= 100);
-    // } else if (this.clientCountFilter === 'high') {
-    //   filtered = filtered.filter(bank => (bank.clientCount || 0) > 100);
-    // }
-
     this.filteredBanks = filtered;
     this.totalPages = Math.ceil(this.filteredBanks.length / this.itemsPerPage);
     this.currentPage = 1;
@@ -130,10 +120,6 @@ toggleDropdown(event: Event) {
       this.currentPage++;
     }
   }
-
-
-
-
 
   previousPage(): void {
     if (this.currentPage > 1) {
@@ -168,10 +154,6 @@ toggleDropdown(event: Event) {
   addBank(): void {
     this.router.navigate(['/admin/banks', 'create']);
   }
-
-  // generateReports(bank: BankDTO): void {
-  //   alert('Reports feature coming soon!');
-  // }
 
   getStatusBadgeClass(isActive: boolean): string {
     return isActive ? 'badge bg-success' : 'badge bg-secondary';

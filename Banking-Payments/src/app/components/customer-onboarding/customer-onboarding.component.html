@@ -33,122 +33,63 @@
       </div>
 
       <!-- Step 1: Basic Information -->
-      <!-- <div *ngIf="currentStep === 1">
-        <h5 class="mb-4">Step 1: Basic Information</h5>
+      <div *ngIf="currentStep === 1">
+        <h5 class="mb-4">Step 1: Client Information + Bank Details</h5>
 
-        <form #basicInfoForm="ngForm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="clientCode" class="form-label">Client Code *</label>
-              <input type="text" class="form-control" id="clientCode"
-                     name="clientCode" [(ngModel)]="clientData.clientCode" required>
-            </div>
+        <form #basicInfoForm="ngForm" (ngSubmit)="createClient()">
+        <div class="row g-3">
 
-            <div class="col-md-6">
-              <label for="clientName" class="form-label">Client Name *</label>
+        <!-- Existing fields -->
+          <div class="col-md-6">
+            <label for="clientName" class="form-label">Client Name *</label>
               <input type="text" class="form-control" id="clientName"
-                     name="clientName" [(ngModel)]="clientData.clientName" required>
-            </div>
-
-            <div class="col-md-6">
-              <label for="clientEmail" class="form-label">Email *</label>
-              <input type="email" class="form-control" id="clientEmail"
-                     name="clientEmail" [(ngModel)]="clientData.clientEmail" required>
-            </div>
-
-            <div class="col-md-6">
-              <label for="password" class="form-label">Password *</label>
-              <input type="password" class="form-control" id="password"
-                     name="password" [(ngModel)]="clientData.password" required>
-            </div>
-
-            <div class="col-md-6">
-              <label for="businessType" class="form-label">Business Type *</label>
-              <input type="text" class="form-control" id="businessType"
-                     name="businessType" [(ngModel)]="clientData.clientBusinessType" required>
-            </div>
-
-            <div class="col-md-6">
-              <label for="registerationNumber" class="form-label">Registration Number</label>
-              <input type="text" class="form-control" id="registerationNumber"
-                     name="registerationNumber" [(ngModel)]="clientData.registerationNumber">
-            </div>
-
-            <div class="col-12">
-              <label for="address" class="form-label">Address *</label>
-              <textarea class="form-control" id="address" rows="3"
-                        name="address" [(ngModel)]="clientData.clientAddress" required></textarea>
-            </div>
-          </div>
-        </form>
-      </div> -->
-
-
-
-      <!-- Step 1: Basic Information -->
-<div *ngIf="currentStep === 1">
-  <h5 class="mb-4">Step 1: Client Information + Bank Details</h5>
-
-  <form #basicInfoForm="ngForm" (ngSubmit)="createClient()">
-    <div class="row g-3">
-
-      <!-- Existing fields -->
-      <div class="col-md-6">
-        <label for="clientName" class="form-label">Client Name *</label>
-        <input type="text" class="form-control" id="clientName"
                name="clientName" [(ngModel)]="clientData.clientName" required>
-      </div>
+          </div>
 
-      <div class="col-md-6">
-        <label for="clientEmail" class="form-label">Email *</label>
-        <input type="email" class="form-control" id="clientEmail"
+          <div class="col-md-6">
+            <label for="clientEmail" class="form-label">Email *</label>
+            <input type="email" class="form-control" id="clientEmail"
                name="clientEmail" [(ngModel)]="clientData.clientEmail" required>
-      </div>
+          </div>
 
-      <div class="col-md-6">
-        <label for="clientPassword" class="form-label">Password *</label>
-        <input type="password" class="form-control" id="clientPassword"
+          <div class="col-md-6">
+            <label for="clientPassword" class="form-label">Password *</label>
+            <input type="password" class="form-control" id="clientPassword"
                name="clientPassword" [(ngModel)]="clientData.clientPassword" required>
-      </div>
+          </div>
 
-      <div class="col-md-6">
-        <label for="clientBusinessType" class="form-label">Business Type *</label>
-        <input type="text" class="form-control" id="clientBusinessType"
+          <div class="col-md-6">
+            <label for="clientBusinessType" class="form-label">Business Type *</label>
+            <input type="text" class="form-control" id="clientBusinessType"
                name="clientBusinessType" [(ngModel)]="clientData.clientBusinessType" required>
-      </div>
+          </div>
 
-      <div class="col-12">
-        <label for="address" class="form-label">Address *</label>
-        <textarea class="form-control" id="address" rows="3"
+          <div class="col-12">
+            <label for="address" class="form-label">Address *</label>
+            <textarea class="form-control" id="address" rows="3"
                   name="clientAddress" [(ngModel)]="clientData.clientAddress" required></textarea>
-      </div>
+          </div>
 
-      <!-- ✅ Bank details -->
-      <hr class="mt-4 mb-3">
+          <!-- ✅ Bank details -->
+          <hr class="mt-4 mb-3">
 
-      <div class="col-md-6">
-        <label for="accountHolder" class="form-label">Account Holder *</label>
-        <input type="text" class="form-control" id="accountHolder"
+          <div class="col-md-6">
+            <label for="accountHolder" class="form-label">Account Holder *</label>
+            <input type="text" class="form-control" id="accountHolder"
                name="accountHolder" [(ngModel)]="clientData.bankDetails.accountHolder" required>
-      </div>
+          </div>
 
-      <div class="col-md-6">
-        <label for="accountNumber" class="form-label">Account Number *</label>
-        <input type="text" class="form-control" id="accountNumber"
+          <div class="col-md-6">
+            <label for="accountNumber" class="form-label">Account Number *</label>
+            <input type="text" class="form-control" id="accountNumber"
                name="accountNumber" [(ngModel)]="clientData.bankDetails.accountNumber" required>
-      </div>
+          </div>
 
-      <!-- <div class="col-md-6">
-        <label for="bankName" class="form-label">Bank Name *</label>
-        <input type="text" class="form-control" id="bankName"
-               name="bankName" [(ngModel)]="clientData.bankDetails.bankName" required>
-      </div> -->
-
-      <div class="col-md-6">
-        <label for="branch" class="form-label">Branch *</label>
-        <input type="text" class="form-control" id="branch"
+          <div class="col-md-6">
+            <label for="branch" class="form-label">Branch *</label>
+            <input type="text" class="form-control" id="branch"
                name="branch" [(ngModel)]="clientData.bankDetails.branch" required>
-      </div>
+          </div>
 
       <div class="col-md-6">
         <label for="ifscCode" class="form-label">IFSC Code *</label>
