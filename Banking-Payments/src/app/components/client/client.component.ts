@@ -54,6 +54,8 @@ export class ClientComponent implements OnInit {
 
   employeePage: number = 1;
   employeePageSize: number = 5;
+  totalEmployeePages!:number;
+  totalEmployeeRecords!:number;
 
   get paginatedEmployees(): Employee[] {
     const filtered = this.filteredEmployees;
@@ -61,27 +63,65 @@ export class ClientComponent implements OnInit {
     const end = start + this.employeePageSize;
     return filtered.slice(start, end);
   }
+
   getMinEmployee():number{
-    return Math.min(this.employeePage * this.employeePageSize, this.filteredEmployees.length);
+    return Math.min(this.employeePage * this.employeePageSize, this.totalEmployeeRecords);
   }
+
   changeEmployeePage(page: number): void {
     if (page >= 1 && page <= this.totalEmployeePages) {
       this.employeePage = page;
+      this.clientService.getAllEmployee(this.employeePage).subscribe({
+        next: (res) => {
+          this.employees = res.employees;
+          this.totalEmployeePages = res.totalPages;
+          this.totalEmployeeRecords = res.totalRecords;
+          console.log('Employees:', res);
+        },
+        error: (error) => {
+          console.error('Error loading employees:', error);
+        }
+      });
     }
   }
+  
   previousEmployeePage(): void {
     if (this.employeePage > 1) {
       this.employeePage--;
+      this.clientService.getAllEmployee(this.employeePage).subscribe({
+        next: (res) => {
+          this.employees = res.employees;
+          this.totalEmployeePages = res.totalPages;
+          this.totalEmployeeRecords = res.totalRecords;
+          console.log('Employees:', res);
+        },
+        error: (error) => {
+          console.error('Error loading employees:', error);
+        }
+      });
     }
   }
+
   nextEmployeePage(): void {
     if (this.employeePage < this.totalEmployeePages) {
       this.employeePage++;
+      console.log(this.employeePage);
+      this.clientService.getAllEmployee(this.employeePage).subscribe({
+        next: (res) => {
+          this.employees = res.employees;
+          this.totalEmployeePages = res.totalPages;
+          this.totalEmployeeRecords = res.totalRecords;
+          console.log('Employees:', res);
+        },
+        error: (error) => {
+          console.error('Error loading employees:', error);
+        }
+      });
     }
   }
-  get totalEmployeePages(): number {
-    return Math.ceil(this.filteredEmployees.length / this.employeePageSize);
-  }
+  // get totalEmployeePages(): number {
+  //   return Math.ceil(this.filteredEmployees.length / this.employeePageSize);
+  // }
   get employeePageNumbers(): number[] {
     return Array.from({ length: this.totalEmployeePages }, (_, i) => i + 1);
   }
@@ -175,6 +215,9 @@ export class ClientComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading bank details:', error);
+        if(error.status === 401){
+          this.router.navigate(['/login']);
+        }
       }
     });
 
@@ -188,9 +231,11 @@ export class ClientComponent implements OnInit {
       }
     });
 
-    this.clientService.getAllEmployee().subscribe({
+    this.clientService.getAllEmployee(1).subscribe({
       next: (res) => {
-        this.employees = res.employees || res;
+        this.employees = res.employees;
+        this.totalEmployeePages = res.totalPages;
+        this.totalEmployeeRecords = res.totalRecords;
         console.log('Employees:', res);
       },
       error: (error) => {
@@ -292,7 +337,7 @@ export class ClientComponent implements OnInit {
       this.currentEmployee.employeeCode = "EM023";
       this.clientService.addEmployee(this.currentEmployee).subscribe({
         next: (res) => {
-          console.log('Employee added:', res);
+          // console.log('Employee added:', res);
           this.employees.push(res);
           alert('Employee added successfully');
           this.closeEmployeeModal();
@@ -314,6 +359,10 @@ export class ClientComponent implements OnInit {
   
 uploadCsv(){
     console.log(this.selectedFile);
+    if(this.selectedFile == null){
+      alert("Please upload file");
+      return;
+    }
     this.clientService.salaryDisbursementByCSV(this.selectedFile, this.clientId).subscribe({
       next:(next)=>{
         alert("Salary disbursement successfully");
@@ -625,8 +674,11 @@ uploadCsv(){
   }
 
   generatePaymentReport(){
+    if(this.reportFromDate == ''  || this.reportToDate == ''){
+      alert("Please select dates")
+      return;
+    }
     alert("Sure want to download");
-    window.location.reload();
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.setTextColor(0, 0, 0);
@@ -649,6 +701,7 @@ uploadCsv(){
           });
         }
 
+        console.log("Line 656 => ");
         
         const columns = Object.keys(this.salaryDisbursementsDTO[0]).map(key => ({ header: key.toUpperCase(), dataKey: key }));
         const options:UserOptions = {

@@ -21,7 +21,7 @@ export class ClientService {
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
-      // 'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
   }
@@ -32,60 +32,59 @@ export class ClientService {
   }
 
   getAllBeneficiary():Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/get-all-beneficiaries/${this.clientId}`);
+    return this.http.get<any>(`${this.apiUrl}/get-all-beneficiaries/${this.clientId}`,{headers:this.getHeaders()});
   }
 
-  getAllEmployee():Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/get-all-employee/${this.clientId}`);
+  getAllEmployee(pageNumber:number):Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}/get-all-employee/${this.clientId}?pageNumber=${pageNumber}&pageSize=5`,{headers:this.getHeaders()});
   }
 
   getAllPayments():Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/get-all-payment/${this.clientId}`);
+    return this.http.get<any>(`${this.apiUrl}/get-all-payment/${this.clientId}`,{headers:this.getHeaders()});
   }
 
   addEmployee(employee:Employee):Observable<Employee>{
-    return this.http.post<Employee>(`${this.apiUrl}/add-employee`, employee);
+    return this.http.post<Employee>(`${this.apiUrl}/add-employee`, employee,{headers:this.getHeaders()});
   }
 
   addBeneficiary(beneficiary:Beneficiary):Observable<Beneficiary>{
-    return this.http.post<Beneficiary>(`${this.apiUrl}/add-beneficiary`,beneficiary);
+    return this.http.post<Beneficiary>(`${this.apiUrl}/add-beneficiary`,beneficiary,{headers:this.getHeaders()});
   }
 
   addPayment(payment:PaymentDTO):Observable<PaymentDTO>{
-    return this.http.post<PaymentDTO>(`${this.apiUrl}/add-payment`, payment);
+    return this.http.post<PaymentDTO>(`${this.apiUrl}/add-payment`, payment,{headers:this.getHeaders()});
   }
 
   deleteEmployee(employeeId:number):Observable<any>{
-    return this.http.delete(`${this.apiUrl}/delete-employee-by-id/${employeeId}`);
+    return this.http.delete(`${this.apiUrl}/delete-employee-by-id/${employeeId}`,{headers:this.getHeaders()});
   }
 
   getSalaryDisbursement():Observable<SalaryDisbursement[]>{
-    return this.http.get<SalaryDisbursement[]>(`${this.apiUrl}/get-salary-disbursement-by-client-id/${this.clientId}`);
+    return this.http.get<SalaryDisbursement[]>(`${this.apiUrl}/get-salary-disbursement-by-client-id/${this.clientId}`,{headers:this.getHeaders()});
   }
 
   salaryDisburment(salary:SalaryDisbursement):Observable<SalaryDisbursement>{
-    return this.http.post<SalaryDisbursement>(`${this.apiUrl}/individual-salary-disbursement`,salary);
+    return this.http.post<SalaryDisbursement>(`${this.apiUrl}/individual-salary-disbursement`,salary,{headers:this.getHeaders()});
   }
 
-salaryDisbursementByCSV(file: File, clientId: number): Observable<any>{
+  salaryDisbursementByCSV(file: File, clientId: number): Observable<any>{
     const formData = new FormData();
     formData.append('file', file);
     formData.append('clientId', clientId.toString());
     formData.append('batchSize', '10');
     
     // Create headers WITHOUT Content-Type for FormData
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
+    // const token = localStorage.getItem('token');
+    // const headers = new HttpHeaders({
       // Uncomment if you need authorization:
       // 'Authorization': `Bearer ${token}`
-    });
-    // Note: Do NOT set Content-Type for FormData uploads!
+    // });
     
     return this.http.post<any>(
       `${this.apiUrl}/salary-disbursement-by-batch`, 
       formData,
-      { headers: headers }
+      { headers: this.getHeaders() }
     );
-}
+  }
 
 }

@@ -2,10 +2,10 @@
   <header class="header" style="display: flex; align-items: center; justify-content: space-between;">
     <div>
       <h1>Client Management Dashboard</h1>
-      <p>Manage your bank details, employees, and beneficiaries</p>
+      <!-- <p>Manage your bank details, employees, and beneficiaries</p> -->
     </div>
     <div>
-      <button style="padding: 5px 10px; border-radius: 10px; background-color: rgb(239, 67, 67); color: white;" (click)="logout()">Logout</button>
+      <button style="padding: 5px 10px; border-radius: 10px; background-color: rgb(239, 67, 67); color: white; border: none;" (click)="logout()">Logout</button>
     </div>
   </header>
   
@@ -90,8 +90,10 @@
       <button class="btn-primary" (click)="openAddEmployeeModal()">
         + Add Employee
       </button>
-      <input type="file" (change)="onFileSelected($event)" accept=".csv" />
-      <button (click)="uploadCsv()">Upload CSV</button>
+      <div class="upload-container">
+        <input type="file" (change)="onFileSelected($event)" accept=".csv" />
+        <button class="upload-btn" (click)="uploadCsv()">Salary Disburse</button>
+      </div>
     </div>
     
     <div class="table-container">
@@ -114,9 +116,9 @@
             <td>{{ employee.position }}</td>
             <td>{{ employee.department }}</td>
             <td>₹{{ employee.salary | number }}</td>
-            <td>{{ employee.joinDate }}</td>
+            <td>{{ employee.joinDate.substring(0,10) }}</td>
             <td>
-              <button class="btn-edit" (click)="openEditEmployeeModal(employee)">Edit</button>
+              <!-- <button class="btn-edit" (click)="openEditEmployeeModal(employee)">Edit</button> -->
               <button class="btn-delete" (click)="deleteEmployee(employee.employeeId)">Delete</button>
               <button class="btn-add-salary" (click)="salaryDisburment(employee.employeeId)"> Salary </button>
             </td>
@@ -132,7 +134,7 @@
       <div class="pagination-info">
         Showing {{ (employeePage - 1) * employeePageSize + 1 }} to 
         {{ getMinEmployee() }} 
-        of {{ filteredEmployees.length }} employees
+        of {{ totalEmployeeRecords }} employees
       </div>
       <div class="pagination-controls">
         <button class="page-btn" (click)="previousEmployeePage()" [disabled]="employeePage === 1">
