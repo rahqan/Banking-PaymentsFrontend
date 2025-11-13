@@ -27,7 +27,7 @@
         class="nav-link"
         [class.active]="activeTab === 'banks'"
         (click)="switchTab('banks')">
-        <i class="bi bi-bank"></i> Bank Performance
+        <i class="bi bi-bank"></i> Bank Report
       </button>
     </li>
     <li class="nav-item">
@@ -35,7 +35,7 @@
         class="nav-link"
         [class.active]="activeTab === 'volume'"
         (click)="switchTab('volume')">
-        <i class="bi bi-bar-chart"></i> Transaction Volume
+        <i class="bi bi-bar-chart"></i> Transaction Report
       </button>
     </li>
     <li class="nav-item">
@@ -43,7 +43,7 @@
         class="nav-link"
         [class.active]="activeTab === 'financial'"
         (click)="switchTab('financial')">
-        <i class="bi bi-currency-dollar"></i> Financial Summary
+        <i class="bi bi-currency-rupee"></i> Bank Wise Transaction Report
       </button>
     </li>
   </ul>
@@ -118,7 +118,7 @@
  <!-- Bank Performance Tab -->
 <div *ngIf="activeTab === 'banks'" class="card">
   <div class="card-header bg-success text-white">
-    <h5 class="mb-0"><i class="bi bi-bank"></i> Bank Performance Report</h5>
+    <h5 class="mb-0"><i class="bi bi-bank"></i> Bank Report</h5>
   </div>
 
   <div class="card-body">

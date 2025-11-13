@@ -164,6 +164,7 @@ export interface PaymentApprovalReportDTO {
 }
 
 export interface BankUserPerformance {
+  bankUserCode:string;
   bankUserId: number;
   bankUserName: string;
   totalApproved: number;
