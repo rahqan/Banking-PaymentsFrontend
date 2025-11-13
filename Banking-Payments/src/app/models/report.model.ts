@@ -158,7 +158,6 @@ export interface PaymentApprovalReportDTO {
   rejectedPayments: number;
   totalApprovedAmount: number;
   totalRejectedAmount: number;
-  averageApprovalTimeHours: number;
   bankUserPerformance: BankUserPerformance[];
   highValueTransactions: HighValueTransaction[];
 }

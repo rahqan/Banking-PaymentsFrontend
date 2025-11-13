@@ -7,6 +7,7 @@ import { Client, ClientVerificationRequest } from '../../models/client.model';
 import { DocumentService } from '../../services/document.service';
 import { Document } from '../../models/document.model';
 import { VerificationStatus } from '../../models/payment.model';
+import { PagedResult } from '../../models/PagedResult';
 
 @Component({
   selector: 'app-client-list',
@@ -28,6 +29,8 @@ export class ClientListComponent implements OnInit {
 
   currentPage = 1;
   itemsPerPage = 10;
+  totalRecords = 0;
+  totalPages = 0; 
 
   loading = false;
   showActionModal = false;
@@ -46,44 +49,47 @@ export class ClientListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadClients();
-    
   }
+loadClients(): void {
+  this.loading = true;
+  this.bankUserService.getAllClients(
+    this.currentPage, 
+    this.itemsPerPage,
+    this.statusFilter,
+    this.searchTerm
+  ).subscribe({
+    next: (res: PagedResult<Client>) => {
+      this.clients = res.data;
+      this.filteredClients = res.data; 
+      this.totalRecords = res.totalRecords;
+      this.totalPages = Math.ceil(this.totalRecords / this.itemsPerPage); 
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error loading clients:', error);
+      this.loading = false;
+    }
+  });
+}
 
+onStatusFilterChange(): void {
+  this.currentPage = 1; 
+  this.loadClients(); 
+}
 
-  loadClients(): void {
-    this.loading = true;
-    this.bankUserService.getAllClients().subscribe({
-      next: (clients) => {
-        console.log(clients[1])
-        this.clients = clients;
-        this.applyFilters();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading clients:', error);
-        this.loading = false;
-      }
-    });
-  }
+onSearchChange(): void {
+  this.currentPage = 1; 
+  this.loadClients(); 
+}
+  // onStatusFilterChange(): void {
+  //   this.currentPage = 1; 
+  //   this.loadClients(); 
+  // }
 
-  applyFilters(): void {
-    this.filteredClients = this.clients.filter(client => {
-      const matchesStatus = this.statusFilter === 'All' ||
-                           client.clientVerificationStatus === this.statusFilter;
-      const matchesSearch = !this.searchTerm ||
-                           client.clientName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           client.clientEmail.toLowerCase().includes(this.searchTerm.toLowerCase());
-      return matchesStatus && matchesSearch;
-    });
-  }
-
-  onStatusFilterChange(): void {
-    this.applyFilters();
-  }
-
-  onSearchChange(): void {
-    this.applyFilters();
-  }
+  // onSearchChange(): void {
+  //   this.currentPage = 1; 
+  //   this.loadClients(); 
+  // }
 
   openActionModal(client: Client): void {
     this.selectedClient = client;
@@ -194,24 +200,22 @@ export class ClientListComponent implements OnInit {
   }
 
   get paginatedClients(): Client[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.filteredClients.slice(start, end);
+    return this.filteredClients;
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.filteredClients.length / this.itemsPerPage);
-  }
+
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.loadClients(); // Fetch next page from server
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.loadClients(); // Fetch previous page from server
     }
   }
 }

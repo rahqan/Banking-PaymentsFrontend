@@ -19,6 +19,13 @@ export interface ClientBankDetails {
   branch: string;
 }
 
+export interface ClientStatsDTO {
+  totalClients: number;
+  pendingOnboard: number;
+  verifiedClients: number;
+  rejectedClients: number;
+}
+
 export interface ClientCreation {
   clientName: string;
   clientEmail: string;

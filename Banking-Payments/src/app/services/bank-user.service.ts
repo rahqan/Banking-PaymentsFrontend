@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Client, ClientCreation, ClientVerificationRequest } from '../models/client.model';
+import { Client, ClientCreation, ClientStatsDTO, ClientVerificationRequest } from '../models/client.model';
 import { environment } from '../../environments/environment';
+import { PagedResult } from '../models/PagedResult';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +28,33 @@ export class BankUserService {
     });
   }
 
-  getAllClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(`${this.apiUrl}/clients`, {
-      headers: this.getHeaders()
-    });
+getAllClients(
+  pageNumber: number, 
+  pageSize: number,
+  status?: string,
+  searchTerm?: string
+): Observable<PagedResult<Client>> {
+  let params: any = { pageNumber, pageSize };
+  
+  if (status && status !== 'All') {
+    params.status = status;
   }
+  if (searchTerm && searchTerm.trim()) {
+    params.searchTerm = searchTerm.trim();
+  }
+  
+  return this.http.get<PagedResult<Client>>(`${this.apiUrl}/clients`, {
+    params: params,
+    headers: this.getHeaders()
+  });
+}
+
+getClientStats(): Observable<ClientStatsDTO> {
+  return this.http.get<ClientStatsDTO>(`${this.apiUrl}/stats`, {
+    headers: this.getHeaders()
+  });
+}
+
 
   getClientById(clientId: number): Observable<Client> {
     return this.http.get<Client>(`${this.apiUrl}/clients/${clientId}`, {

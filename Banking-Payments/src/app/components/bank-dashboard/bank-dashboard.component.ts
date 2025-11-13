@@ -5,6 +5,7 @@ import { BankUserService } from '../../services/bank-user.service';
 import { PaymentService } from '../../services/payment.service';
 import { Client } from '../../models/client.model';
 import { Payment, VerificationStatus } from '../../models/payment.model';
+import { PagedResult } from '../../models/PagedResult';
 
 interface DashboardStats {
   totalClients: number;
@@ -47,13 +48,21 @@ export class BankDashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.loading = true;
 
-    // Load all clients
-    this.bankUserService.getAllClients().subscribe({
-      next: (clients) => {
-        this.clients = clients;
-        this.stats.totalClients = clients.length;
-        this.stats.pendingOnboard = clients.filter(c => c.clientVerificationStatus === 'Pending').length;
-        this.stats.verifiedClients = clients.filter(c => c.clientVerificationStatus === 'Verified').length;
+    // Load stats separately
+    this.bankUserService.getClientStats().subscribe({
+      next: (stats) => {
+        console.log(stats)
+        this.stats.totalClients = stats.totalClients;
+        this.stats.pendingOnboard = stats.pendingOnboard;
+        this.stats.verifiedClients = stats.verifiedClients;
+      },
+      error: (error) => console.error('Error loading stats:', error)
+    });
+
+    // Load first page of clients for display (recent 5)
+    this.bankUserService.getAllClients(1, 5).subscribe({
+      next: (res: PagedResult<Client>) => {
+        this.clients = res.data;
       },
       error: (error) => console.error('Error loading clients:', error)
     });
